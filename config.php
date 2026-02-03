@@ -1,14 +1,27 @@
 <?php
-$host = "localhost";
-$db = "vite_gourmand";
-$user = "root"; // par défaut XAMPP
-$pass = "";     // par défaut XAMPP
+// Récupère l'URL de la base depuis la variable d'environnement Fly.io
+$database_url = getenv('DATABASE_URL');
+
+if (!$database_url) {
+    die("Erreur : DATABASE_URL non définie !");
+}
+
+// Parse l'URL PostgreSQL
+$parts = parse_url($database_url);
+
+$host = $parts['host'];
+$port = $parts['port'];
+$dbname = ltrim($parts['path'], '/');
+$user = $parts['user'];
+$pass = $parts['pass'];
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+    $pdo = new PDO(
+        "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require", 
+        $user, 
+        $pass
+    );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // echo "Connexion réussie !"; // on peut commenter pour éviter d'afficher
-} catch(PDOException $e) {
-    die("Erreur : " . $e->getMessage());
+} catch (PDOException $e) {
+    die("Erreur DB : " . $e->getMessage());
 }
-?>

@@ -1,14 +1,19 @@
 <?php
+session_start();
 require 'config.php';
 
-// Vérifie que l'ID de commande existe
-if (!isset($_GET['id'])) {
-    die("Aucune commande spécifiée.");
+/* =========================
+   1. Vérification de l'ID
+========================= */
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    die("❌ Aucune commande spécifiée.");
 }
 
 $id_commande = (int) $_GET['id'];
 
-// Charger la commande + le menu
+/* =========================
+   2. Récupération de la commande
+========================= */
 $stmt = $pdo->prepare("
     SELECT 
         Commande.id,
@@ -25,12 +30,11 @@ $stmt = $pdo->prepare("
     INNER JOIN Menu ON Commande.id_menu = Menu.id
     WHERE Commande.id = ?
 ");
-
 $stmt->execute([$id_commande]);
-$commande = $stmt->fetch();
+$commande = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$commande) {
-    die("Commande non trouvée.");
+    die("❌ Commande non trouvée.");
 }
 ?>
 
@@ -39,32 +43,79 @@ if (!$commande) {
 <head>
     <meta charset="UTF-8">
     <title>Confirmation de commande</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        body { font-family: Arial; background: #e9ffe9; padding: 20px; }
-        .box { background: white; padding: 20px; border-radius: 6px; width: 400px; margin: auto; }
-        h2 { color: green; }
+        body {
+            background: #f8f9fa;
+        }
+        .card {
+            border-radius: 15px;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="box">
-    <h2>✔ Commande confirmée !</h2>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow p-4 w-100" style="max-width: 550px;">
 
-    <p><strong>Numéro de commande :</strong> <?= $commande['id'] ?></p>
+        <h2 class="text-success text-center mb-4">
+            ✅ Commande confirmée !
+        </h2>
 
-    <p><strong>Nom :</strong> <?= htmlspecialchars($commande['nom']) ?></p>
-    <p><strong>Prénom :</strong> <?= htmlspecialchars($commande['prenom']) ?></p>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+                <strong>Numéro :</strong> <?= $commande['id'] ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Nom :</strong> <?= htmlspecialchars($commande['nom']) ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Prénom :</strong> <?= htmlspecialchars($commande['prenom']) ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Email :</strong> <?= htmlspecialchars($commande['email']) ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Téléphone :</strong> <?= htmlspecialchars($commande['gsm']) ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Menu :</strong> <?= htmlspecialchars($commande['menu_titre']) ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Nombre de personnes :</strong> <?= $commande['nb_personnes'] ?>
+            </li>
+            <li class="list-group-item">
+                <strong>Prix total :</strong>
+                <span class="text-success fw-bold">
+                    <?= number_format($commande['prix_total'], 2, ',', ' ') ?> €
+                </span>
+            </li>
+        </ul>
 
-    <p><strong>Menu choisi :</strong> <?= htmlspecialchars($commande['menu_titre']) ?></p>
+        <p class="text-center text-muted mb-4">
+            📧 Un email de confirmation peut vous être envoyé.
+        </p>
 
-    <p><strong>Nombre de personnes :</strong> <?= $commande['nb_personnes'] ?></p>
+        <div class="d-grid gap-2">
+            <a href="index.php" class="btn btn-primary">
+                🏠 Retour à l'accueil
+            </a>
 
-    <p><strong>Prix total :</strong> <?= number_format($commande['prix_total'], 2) ?> €</p>
+            <a href="annuler_commande.php?id=<?= $commande['id'] ?>"
+               class="btn btn-outline-danger"
+               onclick="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
+                ❌ Annuler la commande
+            </a>
+        </div>
 
-    <hr>
-
-    <p>📧 Un email de confirmation peut vous être envoyé.</p>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

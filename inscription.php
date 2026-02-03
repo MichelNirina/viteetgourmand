@@ -3,12 +3,12 @@ require 'config.php';
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = $_POST['nom'];
-    $prenom = $_POST['prenom'];
-    $email = $_POST['email'];
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email = trim($_POST['email']);
     $motdepasse = password_hash($_POST['motdepasse'], PASSWORD_DEFAULT);
-    $adresse = $_POST['adresse'];
-    $gsm = $_POST['gsm'];
+    $adresse = trim($_POST['adresse']);
+    $gsm = trim($_POST['gsm']);
     $role = 'utilisateur';
 
     // Vérifier si l'email existe déjà
@@ -31,21 +31,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Inscription</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inscription - Vite & Gourmand</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>Créer un compte</h1>
 
-<?php if ($message !== "") echo "<p>$message</p>"; ?>
+<!-- Header simple -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">Vite & Gourmand</a>
+    </div>
+</nav>
 
-<form method="POST">
-    Nom : <br><br><input type="text" name="nom" required><br><br>
-    Prénom : <input type="text" name="prenom" required><br><br>
-    Email : <input type="email" name="email" required><br><br>
-    Mot de passe : <input type="password" name="motdepasse" required><br><br>
-    Adresse : <input type="text" name="adresse" required><br><br>
-    GSM : <input type="text" name="gsm" required><br><br>
-    <button type="submit">Créer mon compte</button>
-</form>
+<!-- Formulaire centré et responsive -->
+<div class="container d-flex justify-content-center align-items-center my-5">
+    <div class="card p-4 shadow" style="width: 100%; max-width: 500px;">
+        <h2 class="mb-4 text-center">Créer un compte</h2>
+
+        <?php if ($message !== ""): ?>
+            <div class="alert <?= strpos($message,'✅') !== false ? 'alert-success' : 'alert-danger' ?>">
+                <?= htmlspecialchars($message) ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" class="row g-3">
+            <div class="col-md-6">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" class="form-control" name="nom" id="nom" required>
+            </div>
+            <div class="col-md-6">
+                <label for="prenom" class="form-label">Prénom</label>
+                <input type="text" class="form-control" name="prenom" id="prenom" required>
+            </div>
+            <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" id="email" required>
+            </div>
+            <div class="col-md-6">
+                <label for="motdepasse" class="form-label">Mot de passe</label>
+                <input type="password" class="form-control" name="motdepasse" id="motdepasse" required>
+            </div>
+            <div class="col-12">
+                <label for="adresse" class="form-label">Adresse</label>
+                <input type="text" class="form-control" name="adresse" id="adresse" required>
+            </div>
+            <div class="col-12">
+                <label for="gsm" class="form-label">GSM</label>
+                <input type="text" class="form-control" name="gsm" id="gsm" required>
+            </div>
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary w-100 mt-3">Créer mon compte</button>
+            </div>
+        </form>
+
+        <div class="mt-3 text-center">
+            <p>Vous avez déjà un compte ? <a href="connexion.php">Se connecter</a></p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
