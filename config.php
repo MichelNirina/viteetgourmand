@@ -1,23 +1,13 @@
 <?php
-// Récupère l'URL de la base depuis la variable d'environnement Fly.io
-$database_url = getenv('DATABASE_URL');
-
-if (!$database_url) {
-    die("Erreur : DATABASE_URL non définie !");
-}
-
-// Parse l'URL PostgreSQL
-$parts = parse_url($database_url);
-
-$host = $parts['host'];
-$port = $parts['port'];
-$dbname = ltrim($parts['path'], '/');
-$user = $parts['user'];
-$pass = $parts['pass'];
+// Configuration MySQL pour XAMPP
+$host = '127.0.0.1';
+$dbname = 'vite_gourmand';
+$user = 'root';
+$pass = ''; // mot de passe vide par défaut sur XAMPP
 
 try {
     $pdo = new PDO(
-        "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require", 
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4", 
         $user, 
         $pass
     );

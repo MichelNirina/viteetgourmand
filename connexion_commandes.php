@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         header("Location: employe_commandes.php");
                         break;
                     default:
-                        header("Location: index.php");
+                        header("Location: mes_commandes.php");
                 }
                 exit;
 
@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </li>
                 <?php else: ?>
                     <li class="nav-item mx-2">
-                        <a class="nav-link btn btn-success btn-hover-white px-3" href="connexion.php">
+                        <a class="nav-link btn btn-success btn-hover-white px-3" href="mes_commandes.php">
                             Connexion
                         </a>
                     </li>
@@ -143,7 +143,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 </div>
 
-<footer class="bg-light p-4 mt-5">
-    <p style="text-align:center; margin:0;">Horaires : Lundi-Dimanche 9h-19h | Mentions légales | CGV</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

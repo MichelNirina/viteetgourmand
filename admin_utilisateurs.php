@@ -47,6 +47,7 @@ if (isset($_GET['delete'])) {
 // Charger tous les utilisateurs
 $users = $pdo->query("SELECT * FROM Utilisateur ORDER BY date_creation DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -56,11 +57,16 @@ $users = $pdo->query("SELECT * FROM Utilisateur ORDER BY date_creation DESC")->f
 </head>
 <body>
 
-<!-- Navbar responsive -->
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
+<!-- Header Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
         <a class="navbar-brand" href="admin_dashboard.php">Vite & Gourmand - Admin</a>
-        <a class="btn btn-danger" href="deconnexion.php">Déconnexion</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="deconnexion.php">Déconnexion</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -102,7 +108,6 @@ $users = $pdo->query("SELECT * FROM Utilisateur ORDER BY date_creation DESC")->f
                 <select name="role" class="form-select">
                     <option value="utilisateur">Utilisateur</option>
                     <option value="employe">Employé</option>
-                    <option value="admin">Administrateur</option>
                 </select>
             </div>
 
@@ -141,7 +146,6 @@ $users = $pdo->query("SELECT * FROM Utilisateur ORDER BY date_creation DESC")->f
                                 <select name="role" class="form-select form-select-sm">
                                     <option value="utilisateur" <?= $u['role']=="utilisateur"?"selected":"" ?>>Utilisateur</option>
                                     <option value="employe" <?= $u['role']=="employe"?"selected":"" ?>>Employé</option>
-                                    <option value="admin" <?= $u['role']=="admin"?"selected":"" ?>>Admin</option>
                                 </select>
 
                                 <button type="submit" name="update_role" class="btn btn-sm btn-primary">OK</button>

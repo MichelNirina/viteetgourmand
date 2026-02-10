@@ -2,39 +2,39 @@
 session_start();
 require 'config.php';
 
-// Vérifier si l'utilisateur est employé
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'employe') {
-    die("Accès refusé.");
+// Vérifier si l'utilisateur est admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    die("Accès refusé. Vous devez être administrateur pour accéder à cette page.");
 }
 
-// Récupérer prénom et nom de l'utilisateur connecté
-$user_id = $_SESSION['user_id'];
-$stmtUser = $pdo->prepare("SELECT nom, prenom FROM utilisateur WHERE id = ?");
-$stmtUser->execute([$user_id]);
-$user = $stmtUser->fetch(PDO::FETCH_ASSOC);
-$prenom = $user['prenom'] ?? '';
-$nom = $user['nom'] ?? '';
+// Récupérer le nom et prénom de l'admin
+$stmtAdmin = $pdo->prepare("SELECT nom, prenom FROM utilisateur WHERE id = ?");
+$stmtAdmin->execute([$_SESSION['user_id']]);
+$admin = $stmtAdmin->fetch(PDO::FETCH_ASSOC);
 
 // Tableau des options de statut
 $statut_options = ['En attente', 'En préparation', 'Livré', 'Annulé'];
 
-// Mise à jour du statut
+// Mise à jour du statut si formulaire soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commande'], $_POST['statut'])) {
     $id_commande = intval($_POST['id_commande']);
     $nouveau_statut = trim($_POST['statut']);
     $date_statut = date('Y-m-d H:i:s');
 
+    // Mettre à jour le statut dans la table commande
     $stmt = $pdo->prepare("UPDATE commande SET statut = ? WHERE id = ?");
     $stmt->execute([$nouveau_statut, $id_commande]);
 
+    // Ajouter une entrée dans l'historique
     $stmtHist = $pdo->prepare("INSERT INTO statut_historique (id_commande, statut, date_modification) VALUES (?, ?, ?)");
     $stmtHist->execute([$id_commande, $nouveau_statut, $date_statut]);
 
-    header("Location: employe_commandes.php"); // Redirige vers la même page
+    header("Location: admin_commandes.php");
     exit;
 }
 
 // Récupérer toutes les commandes avec infos utilisateur et menu
+$commandes = [];
 $stmt = $pdo->query("
     SELECT c.*, m.titre AS menu_titre, u.nom, u.prenom
     FROM commande c
@@ -42,7 +42,9 @@ $stmt = $pdo->query("
     JOIN utilisateur u ON c.id_utilisateur = u.id
     ORDER BY c.date_creation DESC
 ");
-$commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($stmt) {
+    $commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Fonction pour récupérer le dernier statut historique
 function dernier_statut($pdo, $id_commande) {
@@ -64,36 +66,18 @@ function format_date($datetime) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gestion des commandes - Employé</title>
+<title>Admin - Gestion des commandes</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-/* Couleur principale bleu */
-:root {
-    --main-color: #82a9e4;
-}
-
-.navbar { background-color: var(--main-color) !important; }
-.navbar .navbar-brand, .navbar .nav-link { color: white !important; }
-.navbar .nav-link:hover { text-decoration: underline; color: #cce5ff !important; }
-
-.card-hover:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    transition: 0.3s;
-}
-.card-link { text-decoration: none; color: inherit; }
-.table th, .table td { vertical-align: middle; }
-</style>
 </head>
 <body class="bg-light">
 
-<!-- Header Employé -->
-<nav class="navbar navbar-expand-lg">
+<!-- Header Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="employe_commandes.php">Vite & Gourmand - Employé</a>
+        <a class="navbar-brand" href="admin_dashboard.php">Vite & Gourmand - Admin</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="employe_commandes.php">Commandes</a></li>
+                <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="deconnexion.php">Déconnexion</a></li>
             </ul>
         </div>

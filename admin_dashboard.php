@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Récupérer le nom et prénom de l'admin
-$stmt = $pdo->prepare("SELECT nom, prenom FROM Utilisateur WHERE id = ?");
+$stmt = $pdo->prepare("SELECT nom, prenom FROM utilisateur WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -20,14 +20,28 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
     <title>Tableau de bord Admin - Vite & Gourmand</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .card-hover {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
         .card-hover:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            transition: 0.3s;
         }
         .card-link {
             text-decoration: none;
             color: inherit;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .card-text {
+            min-height: 60px;
+        }
+        .row-cols-1.row-cols-md-2.row-cols-lg-4 > .col {
+            display: flex;
         }
     </style>
 </head>
@@ -47,36 +61,54 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
 <!-- Contenu -->
 <div class="container my-5">
-    <h2>Bienvenue, <?= htmlspecialchars($admin['nom'] . ' ' . $admin['prenom']) ?> !</h2>
+    <h2>Bienvenue, <?= htmlspecialchars($admin['prenom'] . ' ' . $admin['nom']) ?> !</h2>
     <p>Voici vos options de gestion :</p>
 
-    <div class="row mt-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4">
         <!-- Gestion des menus -->
-        <div class="col-md-4 mb-3">
+        <div class="col">
             <a href="admin_menu.php" class="card-link">
-                <div class="card card-hover text-center p-4">
-                    <h5 class="card-title">Gestion des Menus</h5>
-                    <p class="card-text">Ajouter, modifier ou supprimer des menus.</p>
+                <div class="card card-hover h-100 text-center p-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Gestion des Menus</h5>
+                        <p class="card-text">Ajouter, modifier ou supprimer des menus.</p>
+                    </div>
                 </div>
             </a>
         </div>
 
         <!-- Gestion des commandes -->
-        <div class="col-md-4 mb-3">
-            <a href="employe_commandes.php" class="card-link">
-                <div class="card card-hover text-center p-4">
-                    <h5 class="card-title">Gestion des Commandes</h5>
-                    <p class="card-text">Voir et mettre à jour le statut des commandes.</p>
+        <div class="col">
+            <a href="admin_commandes.php" class="card-link">
+                <div class="card card-hover h-100 text-center p-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Gestion des Commandes</h5>
+                        <p class="card-text">Voir et mettre à jour le statut des commandes.</p>
+                    </div>
                 </div>
             </a>
         </div>
 
         <!-- Gestion des utilisateurs -->
-        <div class="col-md-4 mb-3">
+        <div class="col">
             <a href="admin_utilisateurs.php" class="card-link">
-                <div class="card card-hover text-center p-4">
-                    <h5 class="card-title">Gestion des Utilisateurs</h5>
-                    <p class="card-text">Voir, modifier ou supprimer des comptes utilisateurs.</p>
+                <div class="card card-hover h-100 text-center p-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Gestion des Utilisateurs</h5>
+                        <p class="card-text">Voir, modifier ou supprimer des comptes utilisateurs.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Voir les messages contacts -->
+        <div class="col">
+            <a href="admin_contacts.php" class="card-link">
+                <div class="card card-hover h-100 text-center p-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Messages reçus</h5>
+                        <p class="card-text">Voir les personnes qui ont contacté le service.</p>
+                    </div>
                 </div>
             </a>
         </div>

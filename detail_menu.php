@@ -1,130 +1,149 @@
 <?php
-include "config.php";
+session_start();
+require 'config.php';
 
-// Vérifier que l'ID du menu est passé en URL
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("Menu non spécifié !");
+// Vérifier l'ID du menu
+if (!isset($_GET['id_menu']) || !is_numeric($_GET['id_menu'])) {
+    exit("❌ Menu introuvable");
 }
 
-$id_menu = (int) $_GET['id'];
+$id_menu = (int)$_GET['id_menu'];
 
-// Infos menu
-$stmt = $pdo->prepare("SELECT * FROM Menu WHERE id = ?");
+// Récupérer le menu
+$stmt = $pdo->prepare("SELECT * FROM menus WHERE id = ?");
 $stmt->execute([$id_menu]);
 $menu = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$menu) {
-    die("Menu introuvable !");
+    exit("❌ Menu introuvable");
 }
 
-// Plats du menu
-$stmt2 = $pdo->prepare("
-    SELECT p.nom, p.type, p.description 
-    FROM Plat p
-    JOIN Menu_Plat mp ON p.id = mp.id_plat
-    WHERE mp.id_menu = ?
-");
-$stmt2->execute([$id_menu]);
-$plats = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+// Infos utilisateur pour header
+$prenom = null;
+$nom = null;
+if (isset($_SESSION['user_id'])) {
+    $stmtUser = $pdo->prepare("SELECT nom, prenom FROM utilisateur WHERE id = ?");
+    $stmtUser->execute([$_SESSION['user_id']]);
+    $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $prenom = ucfirst(substr($user['prenom'],0,1)).".";
+        $nom = $user['nom'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <!-- 🔥 IMPORTANT POUR MOBILE -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Détail du menu - <?= htmlspecialchars($menu['titre']) ?> | Vite & Gourmand</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* Header */
+.header-link { transition: color 0.3s; color: black; }
+.header-link:hover { color: #007bff; }
+.btn-hover-red:hover { color: white !important; background-color: #dc3545 !important; }
+.navbar-nav .nav-item { margin-left: 10px; margin-right: 10px; }
 
-    <title><?= htmlspecialchars($menu['titre']) ?> - Vite & Gourmand</title>
+/* Card centrée */
+.card-detail { max-width: 800px; width: 100%; }
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+/* Image */
+.card-img-top { height: 400px; object-fit: cover; }
+
+/* Footer */
+footer p { font-size: 0.9rem; margin: 0; text-align: center; }
+</style>
 </head>
 
-<body class="bg-light">
+<body>
 
-<!-- HEADER -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<!-- Header -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="index.php">Vite & Gourmand</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto d-flex align-items-center">
+                <li class="nav-item mx-2"><a class="nav-link header-link" href="index.php">Accueil</a></li>
+                <li class="nav-item mx-2"><a class="nav-link header-link" href="mes_menus.php">Mes Menus</a></li>
+                <li class="nav-item mx-2"><a class="nav-link header-link" href="mes_commandes.php">Mes Commandes</a></li>
+                <li class="nav-item mx-2"><a class="nav-link header-link" href="contact.php">Contact</a></li>
+
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link btn btn-danger btn-hover-red px-3" href="deconnexion.php">
+                            Déconnexion
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link btn btn-success btn-hover-white px-3" href="connexion_commander.php">
+                            Connexion
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<div class="container my-4">
+<!-- Contenu Détail Menu -->
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow-sm card-detail">
+        <?php if (!empty($menu['image'])): ?>
+            <img src="<?= htmlspecialchars($menu['image']) ?>" 
+                 class="card-img-top" 
+                 alt="<?= htmlspecialchars($menu['titre']) ?>">
+        <?php endif; ?>
 
-    <!-- TITRE -->
-    <h1 class="mb-3"><?= htmlspecialchars($menu['titre']) ?></h1>
-    <p class="text-muted"><?= nl2br(htmlspecialchars($menu['description'])) ?></p>
+        <div class="card-body">
+            <h2 class="card-title"><?= htmlspecialchars($menu['titre']) ?></h2>
 
-    <!-- INFOS MENU -->
-    <div class="row g-3 my-4">
-        <div class="col-12 col-md-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <p><strong>Thème :</strong> <?= htmlspecialchars($menu['theme']) ?></p>
-                    <p><strong>Régime :</strong> <?= htmlspecialchars($menu['regime']) ?></p>
-                </div>
-            </div>
-        </div>
+            <?php if (!empty($menu['description'])): ?>
+                <p><strong>Description :</strong><br><?= nl2br(htmlspecialchars($menu['description'])) ?></p>
+            <?php endif; ?>
 
-        <div class="col-12 col-md-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <p><strong>Prix minimum :</strong> <?= number_format($menu['prix_minimum'], 2) ?> €</p>
-                    <p><strong>Minimum :</strong> <?= $menu['nb_personnes_min'] ?> personnes</p>
-                    <p><strong>Stock :</strong> <?= $menu['stock'] ?></p>
-                </div>
-            </div>
-        </div>
-    </div>
+            <?php if (!empty($menu['conditions'])): ?>
+                <p><strong>Conditions :</strong><br><?= nl2br(htmlspecialchars($menu['conditions'])) ?></p>
+            <?php endif; ?>
 
-    <!-- CONDITIONS -->
-    <?php if (!empty($menu['conditions'])): ?>
-        <div class="alert alert-warning">
-            <strong>Conditions :</strong><br>
-            <?= nl2br(htmlspecialchars($menu['conditions'])) ?>
-        </div>
-    <?php endif; ?>
+            <p>
+                <?php if (!empty($menu['theme'])): ?>
+                    <strong>Thème :</strong> <?= htmlspecialchars($menu['theme']) ?><br>
+                <?php endif; ?>
 
-    <!-- PLATS -->
-    <h3 class="mt-4 mb-3">🍽️ Plats inclus</h3>
+                <?php if (!empty($menu['regime'])): ?>
+                    <strong>Régime :</strong> <?= htmlspecialchars($menu['regime']) ?><br>
+                <?php endif; ?>
 
-    <?php if (empty($plats)): ?>
-        <p>Aucun plat défini.</p>
-    <?php else: ?>
-        <div class="row g-3">
-            <?php foreach ($plats as $plat): ?>
-                <div class="col-12 col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <span class="badge bg-secondary mb-2">
-                                <?= ucfirst(htmlspecialchars($plat['type'])) ?>
-                            </span>
+                <?php if (!empty($menu['nombre_personnes_min'])): ?>
+                    <strong>Personnes minimum :</strong> <?= (int)$menu['nombre_personnes_min'] ?><br>
+                <?php endif; ?>
 
-                            <h5 class="card-title mt-2">
-                                <?= htmlspecialchars($plat['nom']) ?>
-                            </h5>
+                <?php if (!empty($menu['prix'])): ?>
+                    <strong>Prix :</strong> <?= number_format((float)$menu['prix'], 2, ',', ' ') ?> €<br>
+                <?php endif; ?>
 
-                            <p class="card-text">
-                                <?= htmlspecialchars($plat['description']) ?>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+                <?php if (isset($menu['stock'])): ?>
+                    <strong>Stock :</strong> <?= (int)$menu['stock'] ?>
+                <?php endif; ?>
+            </p>
 
-    <!-- BOUTON COMMANDER -->
-    <div class="d-grid gap-2 my-5">
-        <a href="commande.php?id=<?= $menu['id'] ?>" class="btn btn-success btn-lg">
-            🛒 Commander ce menu
-        </a>
-        <a href="index.php#menus" class="btn btn-outline-secondary">
-            ⬅ Retour aux menus
-        </a>
-    </div>
+            <a href="commander.php?id_menu=<?= (int)$menu['id'] ?>" class="btn btn-success w-100 mt-3">
+                Commander ce menu
+            </a>
+        </div> <!-- /card-body -->
+    </div> <!-- /card -->
+</div> <!-- /container -->
 
-</div>
+<!-- Footer -->
+<footer class="bg-light p-4 mt-5">
+    <p>Horaires : Lundi-Dimanche 9h-19h | Mentions légales | CGV</p>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
