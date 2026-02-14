@@ -19,3 +19,15 @@ Application web de commande de menus pour un restaurant.
 ## Branches Git
 - `main` : version stable / production  
 - `develop` : version de développement
+
+## Création d’une base de données avec phpMyAdmin (XAMPP)
+- Vérifier que Apache et MySQL sont démarrés dans XAMPP
+- Accéder à phpMyAdmin via : http://localhost/phpmyadmin
+- Cliquer sur Nouvelle base de données
+- Saisir le nom exact : vite_gourmand
+- Cliquer sur la base de données vite_gourmand (menu à gauche)
+- Cliquer sur l’onglet Importer
+- Cliquer sur Choisir un fichier
+- Sélectionner le fichier vitegourmanddb.sql
+- Vérifier que le format est bien SQL
+- Cliquer sur Exécuter
