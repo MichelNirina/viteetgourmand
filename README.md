@@ -10,7 +10,7 @@ Application web de commande de menus pour un restaurant.
 - Git & GitHub
 
 ## Installation en local
-1. Cloner le dépôt : `git clone https://github.com/MichelNirina/ECF-Vite-Gourmand.git`
+1. Cloner le dépôt : `git clone https://github.com/MichelNirina/viteetgourmand.git`
 2. Copier dans `htdocs` de XAMPP
 3. Importer la base SQL via phpMyAdmin
 4. Configurer `config.php` avec vos identifiants DB
