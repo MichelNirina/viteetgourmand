@@ -1,8 +1,9 @@
-import { renderNavbar } from '../../components/navbar.js';
+import { renderLayout } from '../../components/layout.js';
 import { requireRole } from '../../utils/auth.js';
 import { getThemes, createTheme, deleteTheme } from '../../services/api.js';
+import { esc } from '../../utils/helpers.js';
 
-renderNavbar();
+renderLayout();
 const app = document.getElementById('app');
 
 async function load() {
@@ -17,12 +18,24 @@ async function load() {
             <input type="text" name="libelle" placeholder="Nouveau thème" required>
             <button type="submit">Ajouter</button>
         </form>
-        <ul>${items.map(i => `<li>${i.libelle} <button class="del" data-id="${i.theme_id}">✕</button></li>`).join('')}</ul>
+        <ul>
+            ${items.map(i => `<li>${esc(i.libelle)} <button class="del" data-id="${esc(i.theme_id)}">✕</button></li>`).join('')}
+        </ul>
     `;
+
     document.getElementById('form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        await createTheme(Object.fromEntries(new FormData(e.target))); load();
+        try {
+            await createTheme(Object.fromEntries(new FormData(e.target)));
+            load();
+        } catch (ex) { alert(ex.message); }
     });
-    document.querySelectorAll('.del').forEach(b => b.addEventListener('click', async () => { await deleteTheme(b.dataset.id); load(); }));
+
+    document.querySelectorAll('.del').forEach(b => b.addEventListener('click', async () => {
+        try { await deleteTheme(b.dataset.id); load(); } catch (ex) { alert(ex.message); }
+    }));
 }
-load();
+
+load().catch(err => {
+    app.innerHTML = `<p class="error-message">Erreur : ${err.message}</p>`;
+});

@@ -1,7 +1,7 @@
-import { renderNavbar } from '../components/navbar.js';
+import { renderLayout } from '../components/layout.js';
 import { sendContact } from '../services/api.js';
 
-renderNavbar();
+renderLayout();
 
 document.getElementById('form-contact').addEventListener('submit', async (e) => {
     e.preventDefault();

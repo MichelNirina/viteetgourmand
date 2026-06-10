@@ -1,14 +1,15 @@
-import { renderNavbar } from '../components/navbar.js';
+import { renderLayout } from '../components/layout.js';
 import { getMenus, getMenu, getFilters } from '../services/api.js';
+import { esc } from '../utils/helpers.js';
+import { BASE } from '../utils/config.js';
 
-renderNavbar();
+renderLayout();
 
 const app = document.getElementById('app');
-const base = '/viteetgourmand/frontend';
 
 function buildOptions(values, label) {
     return `<option value="">Tous les ${label}</option>` +
-        values.map(v => `<option value="${v}">${v}</option>`).join('');
+        values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
 }
 
 function renderMenuList(menus, filters, activeFilters = {}) {
@@ -16,11 +17,11 @@ function renderMenuList(menus, filters, activeFilters = {}) {
         <h1>Nos Menus</h1>
         <form id="filtres">
             <input type="number" name="prix_min" placeholder="Prix min"
-                value="${activeFilters.prix_min ?? ''}">
+                value="${esc(activeFilters.prix_min ?? '')}">
             <input type="number" name="prix_max" placeholder="Prix max"
-                value="${activeFilters.prix_max ?? ''}">
+                value="${esc(activeFilters.prix_max ?? '')}">
             <input type="number" name="personnes" placeholder="Nombre de personnes"
-                value="${activeFilters.personnes ?? ''}">
+                value="${esc(activeFilters.personnes ?? '')}">
             <select name="theme">
                 ${buildOptions(filters.themes, 'thèmes')}
             </select>
@@ -34,12 +35,12 @@ function renderMenuList(menus, filters, activeFilters = {}) {
                 ? '<p>Aucun menu disponible.</p>'
                 : menus.map(menu => `
                     <div class="card">
-                        <h3>${menu.titre}</h3>
-                        <p>${menu.description ?? ''}</p>
-                        <p>Prix : ${menu.prix_par_personne} € / personne</p>
-                        <p>Personnes min : ${menu.nombre_personne}</p>
-                        <p>Stock : ${menu.quantite_restante}</p>
-                        <button class="btn-detail btn" data-id="${menu.menu_id}">Voir détails</button>
+                        <h3>${esc(menu.titre)}</h3>
+                        <p>${esc(menu.description)}</p>
+                        <p>Prix : ${esc(menu.prix_par_personne)} € / personne</p>
+                        <p>Personnes min : ${esc(menu.nombre_personne)}</p>
+                        <p>Stock : ${esc(menu.quantite_restante)}</p>
+                        <button class="btn-detail btn" data-id="${esc(menu.menu_id)}">Voir détails</button>
                     </div>
                 `).join('')
             }
@@ -70,9 +71,13 @@ function renderMenuList(menus, filters, activeFilters = {}) {
 function renderMenuDetail(menu, filters) {
     const platsHtml = (menu.plats ?? []).map(plat => `
         <div class="plat-card">
-            <h3>${plat.titre_plat}</h3>
+            ${plat.photo
+                ? `<img src="${BASE}/${esc(plat.photo)}" alt="${esc(plat.titre_plat)}" class="plat-img">`
+                : '<div class="plat-img plat-img--placeholder"></div>'
+            }
+            <h3>${esc(plat.titre_plat)}</h3>
             ${plat.allergenes && plat.allergenes.length > 0
-                ? `<p>Allergènes : ${plat.allergenes.map(a => a.libelle).join(', ')}</p>`
+                ? `<p>Allergènes : ${plat.allergenes.map(a => esc(a.libelle)).join(', ')}</p>`
                 : '<p>Aucun allergène</p>'
             }
         </div>
@@ -80,15 +85,15 @@ function renderMenuDetail(menu, filters) {
 
     app.innerHTML = `
         <button id="retour" class="btn">← Retour aux menus</button>
-        <h1>${menu.titre}</h1>
-        <p>${menu.description ?? ''}</p>
-        <p>Thème : ${menu.theme_libelle ?? 'Non défini'}</p>
-        <p>Régime : ${menu.regime_libelle ?? 'Non défini'}</p>
-        <p>Prix : ${menu.prix_par_personne} € / personne</p>
-        <p>Personnes min : ${menu.nombre_personne}</p>
-        <p>Stock : ${menu.quantite_restante}</p>
+        <h1>${esc(menu.titre)}</h1>
+        <p>${esc(menu.description)}</p>
+        <p>Thème : ${esc(menu.theme_libelle ?? 'Non défini')}</p>
+        <p>Régime : ${esc(menu.regime_libelle ?? 'Non défini')}</p>
+        <p>Prix : ${esc(menu.prix_par_personne)} € / personne</p>
+        <p>Personnes min : ${esc(menu.nombre_personne)}</p>
+        <p>Stock : ${esc(menu.quantite_restante)}</p>
         ${menu.quantite_restante > 0
-            ? `<a href="${base}/pages/commande/create.html?menu_id=${menu.menu_id}" class="btn">Commander ce menu</a>`
+            ? `<a href="${BASE}/pages/commande/create.html?menu_id=${esc(menu.menu_id)}" class="btn">Commander ce menu</a>`
             : '<p class="error"><strong>Ce menu n\'est plus disponible.</strong></p>'
         }
         <h2>Plats inclus</h2>
@@ -109,4 +114,6 @@ async function loadMenuDetail(id, filters) {
     renderMenuDetail(menu, filters);
 }
 
-loadMenuList();
+loadMenuList().catch(() => {
+    app.innerHTML = '<p class="error-message">Erreur de chargement des menus.</p>';
+});

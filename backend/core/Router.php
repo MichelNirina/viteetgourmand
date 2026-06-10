@@ -117,10 +117,11 @@ class Router
             case 'horaire':
                 require_once __DIR__ . '/../controllers/HoraireController.php';
                 $c = new HoraireController();
-                if ($action === 'store')  $c->store();
-                elseif ($action === 'update') $c->update();
-                elseif ($action === 'delete') $c->delete();
-                else                          $c->index();
+                if ($action === 'store')        $c->store();
+                elseif ($action === 'update')   $c->update();
+                elseif ($action === 'delete')   $c->delete();
+                elseif ($action === 'public')   $c->public();
+                else                            $c->index();
                 break;
 
             case 'allergene':

@@ -1,4 +1,4 @@
-const API = 'http://localhost/viteetgourmand/backend/public';
+const API = 'http://localhost/viteetgourmand/backend/public/';
 
 async function req(url, opts = {}) {
     const res = await fetch(API + url, { credentials: 'include', ...opts });
@@ -8,7 +8,13 @@ async function req(url, opts = {}) {
 }
 
 function post(url, body) {
-    return req(url, { method: 'POST', body: new URLSearchParams(body) });
+    const fd = new FormData();
+    Object.entries(body).forEach(([k, v]) => fd.append(k, v));
+    return req(url, { method: 'POST', body: fd });
+}
+
+function postForm(url, body) {
+    return req(url, { method: 'POST', body: body });
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────
@@ -50,11 +56,14 @@ export const deleteMenu     = (id)  => req(`?page=gestion_menu&action=delete&id=
 // ── PLATS ─────────────────────────────────────────────────────────────
 export const getPlats    = ()       => req('?page=plat');
 export const getPlat     = (id)     => req(`?page=plat&action=show&id=${id}`);
+export const createPlat  = (fd)     => postForm('?page=plat&action=store', fd);
+export const updatePlat  = (fd)     => postForm('?page=plat&action=update', fd);
 export const deletePlat  = (id)     => req(`?page=plat&action=delete&id=${id}`);
 
 // ── HORAIRES ──────────────────────────────────────────────────────────
-export const getHoraires   = ()     => req('?page=horaire');
-export const createHoraire = (b)    => post('?page=horaire&action=store', b);
+export const getHoraires       = ()     => req('?page=horaire');
+export const getHorairesPublic = ()     => req('?page=horaire&action=public');
+export const createHoraire     = (b)    => post('?page=horaire&action=store', b);
 export const updateHoraire = (b)    => post('?page=horaire&action=update', b);
 export const deleteHoraire = (id)   => req(`?page=horaire&action=delete&id=${id}`);
 

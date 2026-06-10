@@ -1,83 +1,78 @@
-import { renderNavbar } from '../../components/navbar.js';
+import { renderLayout } from '../../components/layout.js';
 import { requireRole } from '../../utils/auth.js';
-import { getStats } from '../../services/api.js';
+import { BASE } from '../../utils/config.js';
 
-renderNavbar();
+renderLayout();
 
-const app  = document.getElementById('app');
-const base = '/viteetgourmand/frontend/pages/admin';
+const app = document.getElementById('app');
+const base = `${BASE}/pages/admin`;
 
 async function load() {
     const user = await requireRole([1]);
     if (!user) return;
 
-    const stats = await getStats();
-
     app.innerHTML = `
-        <h1>Tableau de bord Admin</h1>
-        <p style="text-align:center">Bienvenue, <strong>${user.prenom}</strong></p>
-
-        <div class="stats-container">
-            <div class="stats-card total-card">
-                <h2>Commandes totales</h2>
-                <p class="stats-number">${stats.total}</p>
-            </div>
-        </div>
-
-        <h2>Gestion du restaurant</h2>
+        <h1 class="title">Dashboard Administrateur</h1>
         <div class="dashboard">
             <div class="dashboard-card">
+                <h2>Gestion employés</h2>
+                <p>Créer, modifier et supprimer les comptes employés</p>
+                <a class="dashboard-btn" href="${base}/employees.html">Accéder</a>
+            </div>
+            <div class="dashboard-card">
+                <h2>Statistiques</h2>
+                <p>Commandes, chiffre d'affaires et performances</p>
+                <a class="dashboard-btn" href="${base}/stats.html">Voir</a>
+            </div>
+            <div class="dashboard-card">
                 <h2>Commandes</h2>
-                <p>Gérer toutes les commandes</p>
-                <a href="${base}/commandes.html" class="dashboard-btn">Accéder</a>
-            </div>
-            <div class="dashboard-card">
-                <h2>Employés</h2>
-                <p>Gérer les comptes employés</p>
-                <a href="${base}/employees.html" class="dashboard-btn">Accéder</a>
-            </div>
-            <div class="dashboard-card">
-                <h2>Menus</h2>
-                <p>Créer et modifier les menus</p>
-                <a href="${base}/menus.html" class="dashboard-btn">Accéder</a>
-            </div>
-            <div class="dashboard-card">
-                <h2>Plats</h2>
-                <p>Gérer les plats et photos</p>
-                <a href="${base}/plats.html" class="dashboard-btn">Accéder</a>
+                <p>Gestion globale des commandes clients</p>
+                <a class="dashboard-btn" href="${base}/commandes.html">Gérer</a>
             </div>
             <div class="dashboard-card">
                 <h2>Avis clients</h2>
-                <p>Modérer les avis</p>
-                <a href="${base}/avis.html" class="dashboard-btn">Accéder</a>
+                <p>Valider ou refuser les avis clients</p>
+                <a class="dashboard-btn" href="${base}/avis.html">Gérer</a>
             </div>
             <div class="dashboard-card">
-                <h2>Horaires</h2>
-                <p>Horaires d'ouverture</p>
-                <a href="${base}/horaires.html" class="dashboard-btn">Accéder</a>
+                <h2>Menus</h2>
+                <p>Créer, modifier et supprimer les menus</p>
+                <a class="dashboard-btn" href="${base}/menus.html">Accéder</a>
+            </div>
+            <div class="dashboard-card">
+                <h2>Plats</h2>
+                <p>Gérer les plats, photos et allergènes</p>
+                <a class="dashboard-btn" href="${base}/plats.html">Accéder</a>
             </div>
             <div class="dashboard-card">
                 <h2>Allergènes</h2>
-                <p>Liste des allergènes</p>
-                <a href="${base}/allergenes.html" class="dashboard-btn">Accéder</a>
+                <p>Gérer les allergènes disponibles</p>
+                <a class="dashboard-btn" href="${base}/allergenes.html">Accéder</a>
+            </div>
+            <div class="dashboard-card">
+                <h2>Horaires</h2>
+                <p>Modifier les horaires d'ouverture</p>
+                <a class="dashboard-btn" href="${base}/horaires.html">Accéder</a>
             </div>
             <div class="dashboard-card">
                 <h2>Régimes</h2>
-                <p>Régimes alimentaires</p>
-                <a href="${base}/regimes.html" class="dashboard-btn">Accéder</a>
+                <p>Gérer les régimes alimentaires</p>
+                <a class="dashboard-btn" href="${base}/regimes.html">Accéder</a>
             </div>
             <div class="dashboard-card">
                 <h2>Thèmes</h2>
-                <p>Thèmes d'événements</p>
-                <a href="${base}/themes.html" class="dashboard-btn">Accéder</a>
+                <p>Gérer les thèmes d'événements</p>
+                <a class="dashboard-btn" href="${base}/themes.html">Accéder</a>
             </div>
             <div class="dashboard-card">
                 <h2>Utilisateurs</h2>
-                <p>Gérer les comptes</p>
-                <a href="${base}/users.html" class="dashboard-btn">Accéder</a>
+                <p>Gérer tous les comptes</p>
+                <a class="dashboard-btn" href="${base}/users.html">Accéder</a>
             </div>
         </div>
     `;
 }
 
-load();
+load().catch(err => {
+    app.innerHTML = `<p class="error-message">Erreur : ${err.message}</p>`;
+});

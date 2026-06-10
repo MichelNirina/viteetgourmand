@@ -7,7 +7,7 @@ class RegimeController extends ApiController
 {
     public function index()
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 2]);
         $this->json((new Regime())->getAll());
     }
 

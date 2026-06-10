@@ -147,25 +147,53 @@ h2 {
 .footer {
     background-color: #1f1f1f;
     color: #ffffff;
-    text-align: center;
-    padding: 25px 15px;
+    padding: 30px 20px 15px;
     margin-top: 40px;
 }
 
-.footer p {
-    margin: 8px 0;
+.footer-columns {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto 20px;
+}
+
+.footer-col {
+    min-width: 180px;
+}
+
+.footer-col p {
+    margin: 6px 0;
     color: #ffffff;
+    font-size: 14px;
 }
 
-.footer a {
+.footer-col strong {
     color: #ff6b35;
-    text-decoration: none;
-    margin: 0 10px;
-    display: inline-block;
+    font-size: 15px;
 }
 
-.footer a:hover {
-    text-decoration: underline;
+.footer-col a {
+    display: block;
+    color: #cccccc;
+    text-decoration: none;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.footer-col a:hover {
+    color: #ff6b35;
+}
+
+.footer-copy {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    margin: 0;
 }
 
 .auth-container {
@@ -505,6 +533,10 @@ h2 {
     color: white;
 }
 
+.total-card h2 {
+    color: white;
+}
+
 .stats-number {
     font-size: 40px;
     font-weight: bold;
@@ -837,6 +869,16 @@ h2 {
     height: 150px;
     object-fit: cover;
     border-radius: 8px;
+}
+
+.plat-img--placeholder {
+    width: 100%;
+    height: 150px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tag {

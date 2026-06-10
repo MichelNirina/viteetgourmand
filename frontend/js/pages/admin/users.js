@@ -1,8 +1,9 @@
-import { renderNavbar } from '../../components/navbar.js';
+import { renderLayout } from '../../components/layout.js';
 import { requireRole } from '../../utils/auth.js';
 import { getUsers, deleteUser } from '../../services/api.js';
+import { esc } from '../../utils/helpers.js';
 
-renderNavbar();
+renderLayout();
 const app = document.getElementById('app');
 
 async function load() {
@@ -19,19 +20,24 @@ async function load() {
             <tbody>
             ${users.map(u => `
                 <tr>
-                    <td>${u.prenom}</td>
-                    <td>${u.email}</td>
-                    <td>${roles[u.role_id] ?? u.role_id}</td>
-                    <td><button class="del" data-id="${u.user_id}">Supprimer</button></td>
+                    <td>${esc(u.prenom)}</td>
+                    <td>${esc(u.email)}</td>
+                    <td>${esc(roles[u.role_id] ?? u.role_id)}</td>
+                    <td><button class="del" data-id="${esc(u.user_id)}">Supprimer</button></td>
                 </tr>
             `).join('')}
             </tbody>
         </table>
     `;
+
     document.querySelectorAll('.del').forEach(b => {
         b.addEventListener('click', async () => {
-            if (confirm('Supprimer cet utilisateur ?')) { await deleteUser(b.dataset.id); load(); }
+            if (!confirm('Supprimer cet utilisateur ?')) return;
+            try { await deleteUser(b.dataset.id); load(); } catch (ex) { alert(ex.message); }
         });
     });
 }
-load();
+
+load().catch(err => {
+    app.innerHTML = `<p class="error-message">Erreur : ${err.message}</p>`;
+});

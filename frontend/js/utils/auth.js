@@ -1,4 +1,5 @@
 import { getMe } from '../services/api.js';
+import { BASE } from './config.js';
 
 export async function getCurrentUser() {
     try {
@@ -8,7 +9,7 @@ export async function getCurrentUser() {
     }
 }
 
-export async function requireAuth(redirectTo = '/viteetgourmand/frontend/pages/login.html') {
+export async function requireAuth(redirectTo = `${BASE}/pages/login.html`) {
     const user = await getCurrentUser();
     if (!user) {
         window.location.href = redirectTo;
@@ -17,17 +18,17 @@ export async function requireAuth(redirectTo = '/viteetgourmand/frontend/pages/l
     return user;
 }
 
-export async function requireRole(roles, redirectTo = '/viteetgourmand/frontend/index.html') {
+export async function requireRole(roles, redirectTo = `${BASE}/index.html`) {
     const user = await requireAuth();
     if (!user) return null;
-    if (!roles.includes(user.role_id)) {
+    if (!roles.includes(Number(user.role_id))) {
         window.location.href = redirectTo;
         return null;
     }
     return user;
 }
 
-export function redirectIfLogged(redirectTo = '/viteetgourmand/frontend/index.html') {
+export function redirectIfLogged(redirectTo = `${BASE}/index.html`) {
     getCurrentUser().then(user => {
         if (user) window.location.href = redirectTo;
     });

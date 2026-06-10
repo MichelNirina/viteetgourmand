@@ -11,6 +11,11 @@ class HoraireController extends ApiController
         $this->json((new Horaire())->getAll());
     }
 
+    public function public()
+    {
+        $this->json((new Horaire())->getGroupedByDay());
+    }
+
     public function store()
     {
         $this->requireRole([1, 2]);
