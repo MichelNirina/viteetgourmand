@@ -13,7 +13,7 @@ async function load() {
     app.innerHTML = `
         <h1>Employés</h1>
         <a href="dashboard.html">← Dashboard</a>
-        <div id="msg" class="success-msg" style="display:none"></div>
+        <div id="msg" class="success-message" style="display:none"></div>
         <h2>Ajouter un employé</h2>
         <form id="form-emp">
             <input type="text"     name="prenom"    placeholder="Prénom *"    required>

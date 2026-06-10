@@ -4,12 +4,14 @@ import { getPlats, deletePlat, getMenusAdmin, getAllergenes } from '../../servic
 
 renderNavbar();
 const app = document.getElementById('app');
+const API = 'http://localhost/viteetgourmand/backend/public';
 
 async function load() {
     const user = await requireRole([1]);
     if (!user) return;
 
     const [plats, menus, allergenes] = await Promise.all([getPlats(), getMenusAdmin(), getAllergenes()]);
+    const menuMap = Object.fromEntries(menus.map(m => [m.menu_id, m.titre]));
 
     app.innerHTML = `
         <h1>Plats</h1>
@@ -18,26 +20,31 @@ async function load() {
         <form id="form-plat" enctype="multipart/form-data">
             <input type="text" name="titre" placeholder="Titre *" required>
             <select name="menu_id" required>
-                <option value="">Choisir un menu</option>
+                <option value="">Choisir un menu *</option>
                 ${menus.map(m => `<option value="${m.menu_id}">${m.titre}</option>`).join('')}
             </select>
-            <label>Photo<br><input type="file" name="photo" accept="image/*"></label>
+            <label>Photo (jpeg/png/webp)</label>
+            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
             <fieldset>
                 <legend>Allergènes</legend>
                 ${allergenes.map(a => `
-                    <label><input type="checkbox" name="allergenes[]" value="${a.allergene_id}"> ${a.libelle}</label>
+                    <label>
+                        <input type="checkbox" name="allergenes[]" value="${a.allergene_id}"> ${a.libelle}
+                    </label>
                 `).join('')}
             </fieldset>
-            <button type="submit">Ajouter</button>
+            <button type="submit">Ajouter le plat</button>
         </form>
+        <div id="msg" class="success-message" style="display:none"></div>
         <h2>Liste des plats</h2>
         <table>
-            <thead><tr><th>Titre</th><th>Menu</th><th>Action</th></tr></thead>
+            <thead><tr><th>Titre</th><th>Menu</th><th>Allergènes</th><th>Action</th></tr></thead>
             <tbody>
             ${plats.map(p => `
                 <tr>
                     <td>${p.titre_plat}</td>
-                    <td>${p.menu_id}</td>
+                    <td>${menuMap[p.menu_id] ?? p.menu_id}</td>
+                    <td>${p.allergenes ?? 'Aucun'}</td>
                     <td><button class="del" data-id="${p.plat_id}">Supprimer</button></td>
                 </tr>
             `).join('')}
@@ -47,18 +54,24 @@ async function load() {
 
     document.getElementById('form-plat').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const API = 'http://localhost/viteetgourmand/backend/public';
         const formData = new FormData(e.target);
         const res = await fetch(`${API}?page=plat&action=store`, {
             method: 'POST', credentials: 'include', body: formData
         });
         const data = await res.json();
         if (!res.ok) { alert(data.error); return; }
-        e.target.reset(); load();
+        const msg = document.getElementById('msg');
+        msg.textContent = 'Plat ajouté !';
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 2000);
+        e.target.reset();
+        load();
     });
 
     document.querySelectorAll('.del').forEach(b => {
-        b.addEventListener('click', async () => { if (confirm('Supprimer ?')) { await deletePlat(b.dataset.id); load(); } });
+        b.addEventListener('click', async () => {
+            if (confirm('Supprimer ce plat ?')) { await deletePlat(b.dataset.id); load(); }
+        });
     });
 }
 load();

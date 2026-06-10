@@ -9,14 +9,16 @@
 <body>
     <div id="navbar"></div>
     <main>
-        <h1>Connexion</h1>
-        <div id="error" class="error-msg" style="display:none"></div>
-        <form id="form-login">
-            <label>Email<br><input type="email" name="email" required></label>
-            <label>Mot de passe<br><input type="password" name="password" required></label>
-            <button type="submit">Se connecter</button>
-        </form>
-        <p><a href="register.html">Pas encore de compte ? S'inscrire</a></p>
+        <div class="auth-container">
+            <h1>Connexion</h1>
+            <div id="error" class="error-message" style="display:none"></div>
+            <form id="form-login" class="auth-form">
+                <input type="email"    name="email"    placeholder="Email *"          required>
+                <input type="password" name="password" placeholder="Mot de passe *"   required>
+                <button type="submit">Se connecter</button>
+            </form>
+            <p style="text-align:center"><a href="register.html">Pas encore de compte ? S'inscrire</a></p>
+        </div>
     </main>
     <script src="../js/pages/login.js" type="module"></script>
 </body>

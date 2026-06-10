@@ -26,7 +26,7 @@ async function load() {
     app.innerHTML = `
         <h1>Mes commandes</h1>
         <a href="/viteetgourmand/frontend/pages/menu.html" class="btn">Commander un menu</a>
-        <div id="msg" style="display:none" class="success-msg"></div>
+        <div id="msg" style="display:none" class="success-message"></div>
         <table>
             <thead><tr>
                 <th>Numéro</th><th>Menu</th><th>Personnes</th>

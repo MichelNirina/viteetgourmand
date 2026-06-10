@@ -15,7 +15,7 @@ async function load() {
 
     app.innerHTML = `
         <h1>Gestion des commandes</h1>
-        <div id="msg" class="success-msg" style="display:none"></div>
+        <div id="msg" class="success-message" style="display:none"></div>
         ${commandes.length === 0
             ? '<p>Aucune commande.</p>'
             : `<table>

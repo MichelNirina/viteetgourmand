@@ -9,20 +9,22 @@
 <body>
     <div id="navbar"></div>
     <main>
-        <h1>Créer un compte</h1>
-        <div id="error"   class="error-msg"   style="display:none"></div>
-        <div id="success" class="success-msg" style="display:none"></div>
-        <form id="form-register">
-            <label>Prénom *<br><input type="text" name="prenom" required></label>
-            <label>Email *<br><input type="email" name="email" required></label>
-            <label>Mot de passe * (10 car. min)<br><input type="password" name="password" required minlength="10"></label>
-            <label>Téléphone<br><input type="tel" name="telephone"></label>
-            <label>Adresse<br><input type="text" name="adresse"></label>
-            <label>Ville<br><input type="text" name="ville"></label>
-            <label>Pays<br><input type="text" name="pays"></label>
-            <button type="submit">S'inscrire</button>
-        </form>
-        <p><a href="login.html">Déjà un compte ? Se connecter</a></p>
+        <div class="auth-container" style="max-width:500px">
+            <h1>Créer un compte</h1>
+            <div id="error"   class="error-message"   style="display:none"></div>
+            <div id="success" class="success-message" style="display:none"></div>
+            <form id="form-register" class="auth-form">
+                <input type="text"     name="prenom"    placeholder="Prénom *"                      required>
+                <input type="email"    name="email"     placeholder="Email *"                       required>
+                <input type="password" name="password"  placeholder="Mot de passe * (10 car. min)"  required minlength="10">
+                <input type="tel"      name="telephone" placeholder="Téléphone">
+                <input type="text"     name="adresse"   placeholder="Adresse">
+                <input type="text"     name="ville"     placeholder="Ville">
+                <input type="text"     name="pays"      placeholder="Pays">
+                <button type="submit">S'inscrire</button>
+            </form>
+            <p style="text-align:center"><a href="login.html">Déjà un compte ? Se connecter</a></p>
+        </div>
     </main>
     <script src="../js/pages/register.js" type="module"></script>
 </body>

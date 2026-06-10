@@ -14,7 +14,7 @@ async function load() {
     app.innerHTML = `
         <h1>Commandes</h1>
         <a href="dashboard.html">← Dashboard</a>
-        <div id="msg" class="success-msg" style="display:none"></div>
+        <div id="msg" class="success-message" style="display:none"></div>
         <table>
             <thead><tr><th>Numéro</th><th>Client</th><th>Menu</th><th>Personnes</th><th>Date</th><th>Total</th><th>Statut</th><th>Action</th></tr></thead>
             <tbody>

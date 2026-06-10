@@ -22,7 +22,7 @@ async function load() {
         <p>${menu.description}</p>
         <p>Prix : ${menu.prix_par_personne} € / personne</p>
         <p>Minimum : ${menu.nombre_personne} personnes</p>
-        <div id="error" class="error-msg" style="display:none"></div>
+        <div id="error" class="error-message" style="display:none"></div>
         <form id="form-commande">
             <input type="hidden" name="menu_id" value="${menu.menu_id}">
             <label>Nombre de personnes (min ${menu.nombre_personne})<br>
