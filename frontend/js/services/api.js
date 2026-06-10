@@ -1,4 +1,7 @@
-const API = 'http://localhost/viteetgourmand/backend/public/';
+const isProd = !['localhost', '127.0.0.1'].includes(window.location.hostname);
+const API = isProd
+    ? '/backend/public/'
+    : 'http://localhost/viteetgourmand/backend/public/';
 
 async function req(url, opts = {}) {
     const res = await fetch(API + url, { credentials: 'include', ...opts });

@@ -206,3 +206,44 @@ INSERT INTO horaire (jour, heure_ouverture, heure_fermeture) VALUES
 INSERT INTO utilisateur (email, password, prenom, telephone, ville, pays, adresse_postale, role_id) VALUES
 ('admin@viteetgourmand.fr',   '$2y$12$yiGvMy5IAFl4YE5QC1zwPur2bRESjjjlqUR7lW.Trfxyz0KRl1l/S', 'Administrateur', NULL, NULL, NULL, NULL, 1),
 ('employe@viteetgourmand.fr', '$2y$12$FmqYNJc2DRmYzc6jAb9Xse9kkMzlUbxAPmvrrX10tQRVFXYMb7zKO', 'Employe',        NULL, NULL, NULL, NULL, 2);
+
+-- =============================================================
+-- Menus exemples
+-- =============================================================
+
+INSERT INTO menu (titre, nombre_personne, prix_par_personne, description, quantite_restante, regime_id, theme_id) VALUES
+('Menu Noël Prestige',        10, 45.00, 'Un menu festif pour célébrer Noël en grande pompe avec des plats raffinés.',          5, 1, 1),
+('Menu Mariage Classique',    20, 55.00, 'Menu élégant pour votre jour J, avec des plats gastronomiques préparés avec soin.',    3, 1, 3),
+('Menu Anniversaire Festif',   8, 35.00, 'Célébrez votre anniversaire avec ce menu festif et coloré pour petits et grands.',     8, 1, 2),
+('Menu Végétarien Printemps',  6, 30.00, 'Menu 100% végétarien avec des légumes frais de saison, léger et coloré.',             4, 2, 5),
+('Menu Entreprise Premium',   15, 40.00, 'Menu professionnel idéal pour séminaires, réunions et événements d\'entreprise.',      6, 1, 4);
+
+-- Plats du Menu Noël Prestige (menu_id = 1)
+INSERT INTO plat (titre_plat, photo, menu_id) VALUES
+('Foie gras mi-cuit et brioche dorée',             NULL, 1),
+('Pintade rôtie aux marrons et légumes de saison', NULL, 1),
+('Bûche de Noël chocolat praliné',                 NULL, 1);
+
+-- Plats du Menu Mariage Classique (menu_id = 2)
+INSERT INTO plat (titre_plat, photo, menu_id) VALUES
+('Velouté de champignons et crème de truffe',          NULL, 2),
+('Filet de bœuf sauce Périgueux et gratin dauphinois', NULL, 2),
+('Pièce montée et mignardises',                        NULL, 2);
+
+-- Plats du Menu Anniversaire Festif (menu_id = 3)
+INSERT INTO plat (titre_plat, photo, menu_id) VALUES
+('Plateau de charcuteries et fromages',                   NULL, 3),
+('Poulet rôti aux herbes et pommes de terre sarladaises',  NULL, 3),
+('Gâteau d\'anniversaire et desserts variés',              NULL, 3);
+
+-- Plats du Menu Végétarien Printemps (menu_id = 4)
+INSERT INTO plat (titre_plat, photo, menu_id) VALUES
+('Gaspacho de tomates et basilic',        NULL, 4),
+('Curry de pois chiches au lait de coco', NULL, 4),
+('Tarte aux fruits frais de saison',      NULL, 4);
+
+-- Plats du Menu Entreprise Premium (menu_id = 5)
+INSERT INTO plat (titre_plat, photo, menu_id) VALUES
+('Verrines de saumon fumé et avocat',    NULL, 5),
+('Suprême de volaille et légumes rôtis', NULL, 5),
+('Assortiment de desserts individuels',  NULL, 5);
