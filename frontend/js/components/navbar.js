@@ -30,10 +30,34 @@ export async function renderNavbar(containerId = 'navbar') {
         `;
     }
 
-    el.innerHTML = `<nav>${links}</nav>`;
+    el.innerHTML = `
+        <div class="header">
+            <h1>Vite &amp; Gourmand</h1>
+            <p>Restaurant gastronomique</p>
+        </div>
+        <div class="navbar">${links}</div>
+    `;
 
     document.getElementById('btn-logout')?.addEventListener('click', async () => {
         await logout();
         window.location.href = `${base}/index.html`;
     });
+
+    renderFooter();
+}
+
+function renderFooter() {
+    if (document.getElementById('site-footer')) return;
+    const footer = document.createElement('footer');
+    footer.id = 'site-footer';
+    footer.className = 'footer';
+    footer.innerHTML = `
+        <p>&copy; ${new Date().getFullYear()} Vite &amp; Gourmand — Restaurant gastronomique</p>
+        <p>
+            <a href="/viteetgourmand/frontend/index.html">Accueil</a>
+            <a href="/viteetgourmand/frontend/pages/menu.html">Menus</a>
+            <a href="/viteetgourmand/frontend/pages/contact.html">Contact</a>
+        </p>
+    `;
+    document.body.appendChild(footer);
 }
