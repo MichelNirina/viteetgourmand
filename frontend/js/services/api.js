@@ -12,3 +12,9 @@ export async function fetchMenu(id) {
     if (!res.ok) throw new Error('Menu introuvable');
     return res.json();
 }
+
+export async function fetchFilters() {
+    const res = await fetch(`${API_BASE}?page=filters`);
+    if (!res.ok) throw new Error('Erreur lors du chargement des filtres');
+    return res.json();
+}

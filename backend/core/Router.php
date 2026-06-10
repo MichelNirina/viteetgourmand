@@ -12,6 +12,12 @@ class Router {
         
         switch($page) {
 
+            case 'filters':
+                require_once __DIR__ . '/../controllers/FiltersController.php';
+                $controller = new FiltersController();
+                $controller->index();
+                break;
+
             case 'home':
                 require_once __DIR__ . "/../controllers/HomeController.php";
                 $controller = new HomeController();
