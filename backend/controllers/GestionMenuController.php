@@ -1,163 +1,79 @@
 <?php
 
-require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../core/Session.php';
-
 require_once __DIR__ . '/../models/Menu.php';
-require_once __DIR__ . '/../models/Regime.php';
-require_once __DIR__ . '/../models/Theme.php';
-require_once __DIR__ . '/../models/Plat.php';
 
-class GestionMenuController extends Controller
+class GestionMenuController extends ApiController
 {
-        public function __construct()
-    {
-        Session::start();
-
-        $this->requireRole([1, 2]);
-    }
-
     public function index()
     {
-        $menuModel = new Menu();
-
-        $menus = $menuModel->getAll();
-
-        ob_start();
-
-        require_once __DIR__ . '/../views/gestion_menu/index.php';
-
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $this->json((new Menu())->getAll());
     }
 
-    public function create()
+    public function show()
     {
-        $regimeModel = new Regime();
-        $themeModel = new Theme();
-
-        $regimes = $regimeModel->getAll();
-        $themes = $themeModel->getAll();
-
-        ob_start();
-
-        require_once __DIR__ . '/../views/gestion_menu/create.php';
-
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $id   = (int)($_GET['id'] ?? 0);
+        $menu = (new Menu())->getById($id);
+        if (!$menu) $this->error('Menu introuvable', 404);
+        $this->json($menu);
     }
 
     public function store()
     {
-        $titre = $_POST['titre'];
-        $description = $_POST['description'];
-        $nombre_personne = $_POST['nombre_personne'];
-        $prix_par_personne = $_POST['prix_par_personne'];
-        $quantite_restante = $_POST['quantite_restante'];
-        $regime_id = $_POST['regime_id'];
-        $theme_id = $_POST['theme_id'];
+        $this->requireRole([1, 2]);
 
-        $menuModel = new Menu();
+        $titre             = trim($_POST['titre']             ?? '');
+        $description       = trim($_POST['description']       ?? '');
+        $nombre_personne   = (int)($_POST['nombre_personne']  ?? 0);
+        $prix_par_personne = (float)($_POST['prix_par_personne'] ?? 0);
+        $quantite_restante = (int)($_POST['quantite_restante'] ?? 0);
+        $regime_id         = (int)($_POST['regime_id']        ?? 0);
+        $theme_id          = (int)($_POST['theme_id']         ?? 0);
 
-        $menuModel->createMenu(
-            $titre,
-            $description,
-            $nombre_personne,
-            $prix_par_personne,
-            $quantite_restante,
-            $regime_id,
-            $theme_id
+        if (!$titre || !$nombre_personne || !$prix_par_personne) {
+            $this->error('Champs obligatoires manquants', 400);
+        }
+
+        (new Menu())->createMenu(
+            $titre, $description, $nombre_personne,
+            $prix_par_personne, $quantite_restante, $regime_id, $theme_id
         );
 
-        $_SESSION['success'] = "Menu ajouté avec succès.";
-
-        header("Location: ?page=gestion_menu&action=index");
-        exit;
+        $this->json(['message' => 'Menu créé'], 201);
     }
-
-    public function edit()
-{
-    $id = $_GET['id'] ?? null;
-
-    if (!$id) {
-        header("Location: ?page=gestion_menu&action=index");
-        exit;
-    }
-
-    $menuModel = new Menu();
-    $menu = $menuModel->getById($id);
-
-    if (!$menu) {
-        $_SESSION['error'] = "Menu introuvable.";
-        header("Location: ?page=gestion_menu&action=index");
-        exit;
-    }
-
-    $regimeModel = new Regime();
-    $themeModel = new Theme();
-    $platModel = new Plat();
-
-    $regimes = $regimeModel->getAll();
-    $themes = $themeModel->getAll();
-
-    $plats = $platModel->getByMenuId($id);
-
-    ob_start();
-    require_once __DIR__ . '/../views/gestion_menu/edit.php';
-    $content = ob_get_clean();
-
-    require_once __DIR__ . '/../views/layout.php';
-}
 
     public function update()
     {
-        $id = $_POST['menu_id'];
+        $this->requireRole([1, 2]);
 
-        $titre = trim($_POST['titre']);
-        $description = trim($_POST['description']);
-        $nombre_personne = $_POST['nombre_personne'];
-        $prix_par_personne = $_POST['prix_par_personne'];
-        $quantite_restante = $_POST['quantite_restante'];
-        $regime_id = $_POST['regime_id'];
-        $theme_id = $_POST['theme_id'];
+        $id                = (int)($_POST['menu_id']          ?? 0);
+        $titre             = trim($_POST['titre']             ?? '');
+        $description       = trim($_POST['description']       ?? '');
+        $nombre_personne   = (int)($_POST['nombre_personne']  ?? 0);
+        $prix_par_personne = (float)($_POST['prix_par_personne'] ?? 0);
+        $quantite_restante = (int)($_POST['quantite_restante'] ?? 0);
+        $regime_id         = (int)($_POST['regime_id']        ?? 0);
+        $theme_id          = (int)($_POST['theme_id']         ?? 0);
 
-        $menuModel = new Menu();
+        if (!$id) $this->error('ID manquant', 400);
 
-        $menuModel->updateMenu(
-            $id,
-            $titre,
-            $description,
-            $nombre_personne,
-            $prix_par_personne,
-            $quantite_restante,
-            $regime_id,
-            $theme_id
+        (new Menu())->updateMenu(
+            $id, $titre, $description, $nombre_personne,
+            $prix_par_personne, $quantite_restante, $regime_id, $theme_id
         );
 
-       $_SESSION['success'] = "Menu modifié avec succès.";
-
-        header("Location: ?page=gestion_menu&action=index");
-        exit;
+        $this->json(['message' => 'Menu mis à jour']);
     }
 
     public function delete()
     {
-        $id = $_GET['id'] ?? null;
-
-        if (!$id) {
-            header("Location: ?page=gestion_menu&action=index");
-            exit;
-        }
-
-        $menuModel = new Menu();
-
-        $menuModel->deleteMenu($id);
-
-        $_SESSION['success'] = "Menu supprimé avec succès.";
-
-        header("Location: ?page=gestion_menu&action=index");
-        exit;
+        $this->requireRole([1, 2]);
+        $id = (int)($_GET['id'] ?? 0);
+        if (!$id) $this->error('ID manquant', 400);
+        (new Menu())->deleteMenu($id);
+        $this->json(['message' => 'Menu supprimé']);
     }
 }

@@ -1,27 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/ApiController.php';
 
-class ContactController extends Controller
+class ContactController extends ApiController
 {
-    public function index()
-    {
-        ob_start();
-        require_once __DIR__ . '/../views/contact/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
-    }
-
     public function send()
     {
-        $titre = $_POST['titre'];
-        $description = $_POST['description'];
-        $email = $_POST['email'];
+        $titre       = trim($_POST['titre']       ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $email       = trim($_POST['email']       ?? '');
 
-        $_SESSION['success'] = "Votre demande a été envoyée.";
+        if (!$titre || !$description || !$email) {
+            $this->error('Tous les champs sont obligatoires', 400);
+        }
 
-        header("Location: ?page=contact");
-        exit;
+        // TODO: stocker en base ou envoyer un email
+        $this->json(['message' => 'Votre message a bien été envoyé']);
     }
 }

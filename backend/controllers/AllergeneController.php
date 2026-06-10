@@ -1,62 +1,31 @@
 <?php
 
-require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../models/Allergene.php';
-require_once __DIR__ . '/../core/Session.php';
 
-class AllergeneController extends Controller
+class AllergeneController extends ApiController
 {
-    public function __construct()
-    {
-        session_start();
-        $this->requireRole([1, 2]);
-    }
-    
     public function index()
     {
-        $allergeneModel = new Allergene();
-
-        $allergenes = $allergeneModel->getAll();
-
-        ob_start();
-        require_once __DIR__ . '/../views/allergene/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
-    }
-
-    public function create()
-    {
-        ob_start();
-        require_once __DIR__ . '/../views/allergene/create.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $this->json((new Allergene())->getAll());
     }
 
     public function store()
     {
-        $libelle = trim($_POST['libelle']);
-
-        $allergeneModel = new Allergene();
-        $allergeneModel->createAllergene($libelle);
-
-        $_SESSION['success'] = "Allergène ajouté.";
-
-        header("Location: ?page=allergene");
-        exit;
+        $this->requireRole([1, 2]);
+        $libelle = trim($_POST['libelle'] ?? '');
+        if (!$libelle) $this->error('Libellé obligatoire', 400);
+        (new Allergene())->createAllergene($libelle);
+        $this->json(['message' => 'Allergène ajouté'], 201);
     }
 
     public function delete()
     {
-        $id = (int)$_GET['id'];
-
-        $allergeneModel = new Allergene();
-        $allergeneModel->deleteAllergene($id);
-
-        $_SESSION['success'] = "Allergène supprimé.";
-
-        header("Location: ?page=allergene");
-        exit;
+        $this->requireRole([1, 2]);
+        $id = (int)($_GET['id'] ?? 0);
+        if (!$id) $this->error('ID manquant', 400);
+        (new Allergene())->deleteAllergene($id);
+        $this->json(['message' => 'Allergène supprimé']);
     }
 }

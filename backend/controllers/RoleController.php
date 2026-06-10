@@ -1,75 +1,31 @@
 <?php
 
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../models/Role.php';
 
-class RoleController extends Controller
+class RoleController extends ApiController
 {
     public function index()
     {
-        $this->requireRole(1);
-
-        $roleModel = new Role();
-        $roles = $roleModel->getAllRoles();
-
-        require_once __DIR__ . '/../views/role/index.php';
-    }
-
-    public function create()
-    {
-        $this->requireRole(1);
-
-        require_once __DIR__ . '/../views/role/create.php';
+        $this->requireRole([1]);
+        $this->json((new Role())->getAllRoles());
     }
 
     public function store()
     {
-        $this->requireRole(1);
-
-        $libelle = $_POST['libelle'];
-
-        $roleModel = new Role();
-        $roleModel->createRole($libelle);
-
-        header("Location: ?page=role");
-        exit;
-    }
-
-    public function edit()
-    {
-        $this->requireRole(1);
-
-        $id = $_GET['id'];
-
-        $roleModel = new Role();
-        $role = $roleModel->getById($id);
-
-        require_once __DIR__ . '/../views/role/edit.php';
-    }
-
-    public function update()
-    {
-        $this->requireRole(1);
-
-        $id = $_POST['id'];
-        $libelle = $_POST['libelle'];
-
-        $roleModel = new Role();
-        $roleModel->updateRole($id, $libelle);
-
-        header("Location: ?page=role");
-        exit;
+        $this->requireRole([1]);
+        $libelle = trim($_POST['libelle'] ?? '');
+        if (!$libelle) $this->error('Libellé obligatoire', 400);
+        (new Role())->createRole($libelle);
+        $this->json(['message' => 'Rôle ajouté'], 201);
     }
 
     public function delete()
     {
-        $this->requireRole(1);
-
-        $id = $_GET['id'];
-
-        $roleModel = new Role();
-        $roleModel->deleteRole($id);
-
-        header("Location: ?page=role");
-        exit;
+        $this->requireRole([1]);
+        $id = (int)($_GET['id'] ?? 0);
+        if (!$id) $this->error('ID manquant', 400);
+        (new Role())->deleteRole($id);
+        $this->json(['message' => 'Rôle supprimé']);
     }
 }

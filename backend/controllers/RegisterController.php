@@ -1,58 +1,41 @@
 <?php
 
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../models/User.php';
 
-class RegisterController extends Controller
+class RegisterController extends ApiController
 {
-    public function index()
-    {
-        ob_start();
-        require_once __DIR__ . '/../views/auth/register.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
-    }
-
     public function store()
     {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $prenom = $_POST['prenom'];
-        $telephone = $_POST['telephone'];
-        $ville = $_POST['ville'] ?? null;
-        $pays = $_POST['pays'] ?? null;
-        $adresse = $_POST['adresse'];
+        $email     = trim($_POST['email']     ?? '');
+        $password  = trim($_POST['password']  ?? '');
+        $prenom    = trim($_POST['prenom']    ?? '');
+        $telephone = trim($_POST['telephone'] ?? '');
+        $adresse   = trim($_POST['adresse']   ?? '');
+        $ville     = trim($_POST['ville']     ?? '');
+        $pays      = trim($_POST['pays']      ?? '');
+
+        if (!$email || !$password || !$prenom) {
+            $this->error('Email, mot de passe et prénom sont obligatoires', 400);
+        }
 
         if (strlen($password) < 10) {
-            $_SESSION['error'] = "Mot de passe trop court (10 caractères minimum)";
-            header("Location: ?page=register");
-            exit;
+            $this->error('Mot de passe trop court (10 caractères minimum)', 400);
         }
 
         $model = new User();
 
         if ($model->findByEmail($email)) {
-            $_SESSION['error'] = "Cet email est déjà utilisé.";
-            header("Location: ?page=register");
-            exit;
+            $this->error('Cet email est déjà utilisé', 409);
         }
-
-        $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $model->createUser(
             $email,
-            $hash,
-            $prenom,
-            $telephone,
-            $ville,
-            $pays,
-            $adresse,
+            password_hash($password, PASSWORD_DEFAULT),
+            $prenom, $telephone, $ville, $pays, $adresse,
             3
         );
 
-        $_SESSION['success'] = "Compte créé avec succès ! Vous pouvez vous connecter.";
-
-        header("Location: ?page=login");
-        exit;
+        $this->json(['message' => 'Compte créé avec succès'], 201);
     }
 }

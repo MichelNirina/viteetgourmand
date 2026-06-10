@@ -1,43 +1,48 @@
 <?php
 
-require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/ApiController.php';
+require_once __DIR__ . '/../core/Session.php';
 require_once __DIR__ . '/../models/User.php';
 
-class AuthController extends Controller
+class AuthController extends ApiController
 {
-    public function login()
+    public function me()
     {
-        ob_start();
-        require_once __DIR__ . '/../views/auth/login.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        Session::start();
+        if (!Session::isLogged()) {
+            $this->json(null);
+        }
+        $user = Session::user();
+        unset($user['password']);
+        $this->json($user);
     }
+
     public function authenticate()
     {
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
+        Session::start();
+        $email    = trim($_POST['email']    ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        if (!$email || !$password) {
+            $this->error('Email et mot de passe requis', 400);
+        }
 
         $userModel = new User();
-        $user = $userModel->findByEmail($email);
+        $user      = $userModel->findByEmail($email);
 
         if ($user && password_verify($password, $user['password'])) {
-
             $_SESSION['user'] = $user;
             $_SESSION['role'] = $user['role_id'];
-
-            if ($user['role_id'] == 1) {
-                header("Location: ?page=admin");
-            } elseif ($user['role_id'] == 2) {
-                header("Location: ?page=employee");
-            } else {
-                header("Location: ?page=client");
-            }
-
-            exit;
-
+            unset($user['password']);
+            $this->json(['user' => $user, 'role' => (int)$user['role_id']]);
         } else {
-            echo "Login failed";
+            $this->error('Email ou mot de passe incorrect', 401);
         }
+    }
+
+    public function logout()
+    {
+        Session::logout();
+        $this->json(['message' => 'Déconnecté']);
     }
 }

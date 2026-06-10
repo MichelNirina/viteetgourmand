@@ -1,144 +1,70 @@
 <?php
 
-require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../core/Session.php';
+require_once __DIR__ . '/../models/User.php';
 
-class UserController extends Controller
+class UserController extends ApiController
 {
-   
     public function index()
     {
-        Session::start();
-
-        if (!Session::isLogged()) {
-            header("Location: ?page=login");
-            exit;
-        }
-
-        $userModel = new User();
-
-        $user = $userModel->getById(Session::userId());
-
-        ob_start();
-        require_once __DIR__ . '/../views/user/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1]);
+        $this->json((new User())->getAllUsers());
     }
 
-    // FORM CREATE
-    public function create()
+    public function profile()
     {
-        $this->requireRole(1);
-
-        require_once __DIR__ . '/../views/user/create.php';
+        $this->requireAuth();
+        $user = (new User())->getById(Session::userId());
+        unset($user['password']);
+        $this->json($user);
     }
 
-    // INSERT USER
     public function store()
     {
-        $this->requireRole(1);
+        $this->requireRole([1]);
+        $email     = trim($_POST['email']    ?? '');
+        $password  = trim($_POST['password'] ?? '');
+        $prenom    = trim($_POST['prenom']   ?? '');
+        $telephone = trim($_POST['telephone'] ?? '');
+        $ville     = trim($_POST['ville']    ?? '');
+        $pays      = trim($_POST['pays']     ?? '');
+        $adresse   = trim($_POST['adresse']  ?? '');
+        $role_id   = (int)($_POST['role_id'] ?? 3);
 
-        $email = $_POST['email'];
-        $password = password_hash(
-            $_POST['password'],
-            PASSWORD_DEFAULT);
-        $prenom = $_POST['prenom'];
-        $telephone = $_POST['telephone'];
-        $ville = $_POST['ville'];
-        $pays = $_POST['pays'];
-        $adresse = $_POST['adresse'];
-        $role_id = $_POST['role_id'];
-
-        $userModel = new User();
-        $userModel->createUser(
-            $email,
-            $password,
-            $prenom,
-            $telephone,
-            $ville,
-            $pays,
-            $adresse,
-            $role_id
-        );
-
-        header("Location: ?page=user");
-        exit;
-    }
-
-    // FORM EDIT
-    public function edit()
-    {
-        Session::start();
-
-        if (!Session::isLogged()) {
-            header("Location: ?page=login");
-            exit;
+        if (!$email || !$password || !$prenom) {
+            $this->error('Champs obligatoires manquants', 400);
         }
 
-        $user = Session::user();
+        (new User())->createUser(
+            $email, password_hash($password, PASSWORD_DEFAULT),
+            $prenom, $telephone, $ville, $pays, $adresse, $role_id
+        );
 
-        ob_start();
-        require_once __DIR__ . '/../views/user/edit.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->json(['message' => 'Utilisateur créé'], 201);
     }
 
-    // UPDATE USER
     public function update()
     {
-        Session::start();
+        $this->requireAuth();
+        $id        = (int)($_POST['user_id']       ?? Session::userId());
+        $prenom    = trim($_POST['prenom']          ?? '');
+        $email     = trim($_POST['email']           ?? '');
+        $telephone = trim($_POST['telephone']       ?? '');
+        $ville     = trim($_POST['ville']           ?? '');
+        $pays      = trim($_POST['pays']            ?? '');
+        $adresse   = trim($_POST['adresse_postale'] ?? '');
 
-        if (!Session::isLogged()) {
-            header("Location: ?page=login");
-            exit;
-        }
-
-        $user_id = Session::userId();
-
-        $prenom = $_POST['prenom'];
-        $email = $_POST['email'];
-        $telephone = $_POST['telephone'];
-        $ville = $_POST['ville'];
-        $pays = $_POST['pays'];
-        $adresse_postale = $_POST['adresse_postale'];
-
-        $userModel = new User();
-
-        $userModel->updateUser(
-            $user_id,
-            $prenom,
-            $email,
-            $telephone,
-            $ville,
-            $pays,
-            $adresse_postale
-        );
-
-        // Recharger les données depuis la base
-        $user = $userModel->getById($user_id);
-
-        // Mettre à jour toute la session
-        $_SESSION['user'] = $user;
-
-        $_SESSION['success'] = "Profil mis à jour avec succès";
-
-        header("Location: ?page=user&action=index");
-        exit;
+        (new User())->updateUser($id, $prenom, $email, $telephone, $ville, $pays, $adresse);
+        $this->json(['message' => 'Profil mis à jour']);
     }
 
-    // DELETE USER
     public function delete()
     {
-        $this->requireRole(1);
-
-        $id = $_GET['id'];
-
-        $userModel = new User();
-        $userModel->deleteUser($id);
-
-        header("Location: ?page=user");
-        exit;
+        $this->requireRole([1]);
+        $id = (int)($_GET['id'] ?? 0);
+        if (!$id) $this->error('ID manquant', 400);
+        (new User())->deleteUser($id);
+        $this->json(['message' => 'Utilisateur supprimé']);
     }
 }

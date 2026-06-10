@@ -1,20 +1,13 @@
 <?php
 
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../models/Avis.php';
 
-class HomeController extends Controller
+class HomeController extends ApiController
 {
     public function index()
     {
-        $avisModel = new Avis();
-
-        $avis = $avisModel->getValidatedAvis();
-
-        ob_start();
-        require_once __DIR__ . '/../views/home/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $avis = (new Avis())->getValidatedAvis();
+        $this->json($avis);
     }
-    
 }

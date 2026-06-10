@@ -1,37 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../core/Session.php';
-
 require_once __DIR__ . '/../models/Commande.php';
-require_once __DIR__ . '/../models/Menu.php';
 
-class EmployeeController extends Controller
+class EmployeeController extends ApiController
 {
     public function index()
     {
-        Session::start();
         $this->requireRole(2);
-
-        ob_start();
-        require_once __DIR__ . '/../views/employee/dashboard.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->json(['message' => 'Bienvenue employé', 'user' => Session::user()]);
     }
 
-    public function menu()
+    public function commandes()
     {
-        Session::start();
-        $this->requireRole(2);
-
-        $menuModel = new Menu();
-        $menus = $menuModel->getAll();
-
-        ob_start();
-        require_once __DIR__ . '/../views/menu/gestion.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $this->json((new Commande())->getAllCommandes());
     }
 }

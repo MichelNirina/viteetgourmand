@@ -1,189 +1,94 @@
 <?php
 
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../models/Plat.php';
 require_once __DIR__ . '/../models/Allergene.php';
 require_once __DIR__ . '/../models/Menu.php';
-require_once __DIR__ . '/../core/Controller.php';
 
-class PlatController extends Controller
+class PlatController extends ApiController
 {
     public function index()
     {
-        $platModel = new Plat();
-        $plats = $platModel->getAll();
-
-        ob_start();
-        require_once __DIR__ . '/../views/plat/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $this->json((new Plat())->getAll());
     }
 
-    public function create()
+    public function show()
     {
-        $allergeneModel = new Allergene();
-        $menuModel = new Menu();
-
-        $allergenes = $allergeneModel->getAll();
-        $menus = $menuModel->getAll();
-
-        ob_start();
-        require_once __DIR__ . '/../views/plat/create.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->requireRole([1, 2]);
+        $id   = (int)($_GET['id'] ?? 0);
+        $plat = (new Plat())->getById($id);
+        if (!$plat) $this->error('Plat introuvable', 404);
+        $plat['allergenes'] = (new Plat())->getAllergenesByPlat($id);
+        $this->json($plat);
     }
 
     public function store()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ?page=plat");
-            exit;
-        }
+        $this->requireRole([1, 2]);
 
-        $titre = trim($_POST['titre'] ?? '');
+        $titre   = trim($_POST['titre']   ?? '');
         $menu_id = (int)($_POST['menu_id'] ?? 0);
 
-        if ($menu_id <= 0) {
-            $_SESSION['error'] = "Veuillez sélectionner un menu.";
-            header("Location: ?page=plat&action=create");
-            exit;
-        }
-
-        $menuModel = new Menu();
-        $menuExiste = $menuModel->getById($menu_id);
-
-        if (!$menuExiste) {
-            $_SESSION['error'] = "Menu introuvable.";
-            header("Location: ?page=plat&action=create");
-            exit;
+        if (!$titre || !$menu_id) {
+            $this->error('Titre et menu obligatoires', 400);
         }
 
         $photo = null;
-
         if (!empty($_FILES['photo']['name'])) {
-
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-            if (!in_array($_FILES['photo']['type'], $allowedTypes)) {
-                $_SESSION['error'] = "Format image invalide.";
-                header("Location: ?page=plat&action=create");
-                exit;
+            $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!in_array($_FILES['photo']['type'], $allowed)) {
+                $this->error('Format image invalide', 400);
             }
-
             $filename = time() . '_' . basename($_FILES['photo']['name']);
-
             move_uploaded_file(
                 $_FILES['photo']['tmp_name'],
-                __DIR__ . '/../assets/images/plats/' . $filename
+                __DIR__ . '/../../frontend/assets/images/plats/' . $filename
             );
-
             $photo = 'assets/images/plats/' . $filename;
         }
 
         $platModel = new Plat();
-        $plat_id = $platModel->create($titre, $photo, $menu_id);
+        $plat_id   = $platModel->create($titre, $photo, $menu_id);
 
         if (!empty($_POST['allergenes']) && is_array($_POST['allergenes'])) {
-            foreach ($_POST['allergenes'] as $idAllergene) {
-                $platModel->addAllergene($plat_id, (int)$idAllergene);
+            foreach ($_POST['allergenes'] as $a) {
+                $platModel->addAllergene($plat_id, (int)$a);
             }
         }
 
-        $_SESSION['success'] = "Plat ajouté avec succès";
-
-        header("Location: ?page=plat");
-        exit;
-    }
-
-    public function edit()
-    {
-        $id = (int)($_GET['id'] ?? 0);
-
-        if ($id <= 0) {
-            header("Location: ?page=plat");
-            exit;
-        }
-
-        $platModel = new Plat();
-        $menuModel = new Menu();
-        $allergeneModel = new Allergene();
-
-        $plat = $platModel->getById($id);
-        $menus = $menuModel->getAll();
-        $allergenes = $allergeneModel->getAll();
-
-        $platAllergenes = $platModel->getAllergenesByPlat($id);
-
-        if (!$plat) {
-            header("Location: ?page=plat");
-            exit;
-        }
-
-        ob_start();
-        require __DIR__ . '/../views/plat/edit.php';
-        $content = ob_get_clean();
-
-        require __DIR__ . '/../views/layout.php';
+        $this->json(['message' => 'Plat ajouté'], 201);
     }
 
     public function update()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ?page=plat");
-            exit;
-        }
+        $this->requireRole([1, 2]);
 
-        $id = (int)($_POST['plat_id'] ?? 0);
-
-        if ($id <= 0) {
-            $_SESSION['error'] = "ID invalide";
-            header("Location: ?page=plat");
-            exit;
-        }
-
-        $titre = trim($_POST['titre'] ?? '');
+        $id      = (int)($_POST['plat_id'] ?? 0);
+        $titre   = trim($_POST['titre']    ?? '');
         $menu_id = (int)($_POST['menu_id'] ?? 0);
 
-        if ($menu_id <= 0) {
-            $_SESSION['error'] = "Menu invalide";
-            header("Location: ?page=plat&action=edit&id=" . $id);
-            exit;
-        }
+        if (!$id) $this->error('ID manquant', 400);
 
         $platModel = new Plat();
-        $plat = $platModel->getById($id);
-
-        if (!$plat) {
-            $_SESSION['error'] = "Plat introuvable";
-            header("Location: ?page=plat");
-            exit;
-        }
+        $plat      = $platModel->getById($id);
+        if (!$plat) $this->error('Plat introuvable', 404);
 
         $photo = $plat['photo'];
-
         if (!empty($_FILES['photo']['name'])) {
-
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-            if (!in_array($_FILES['photo']['type'], $allowedTypes)) {
-                $_SESSION['error'] = "Format image invalide.";
-                header("Location: ?page=plat&action=edit&id=" . $id);
-                exit;
+            $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!in_array($_FILES['photo']['type'], $allowed)) {
+                $this->error('Format image invalide', 400);
             }
-
             $filename = time() . '_' . basename($_FILES['photo']['name']);
-
             move_uploaded_file(
                 $_FILES['photo']['tmp_name'],
-                __DIR__ . '/../assets/images/plats/' . $filename
+                __DIR__ . '/../../frontend/assets/images/plats/' . $filename
             );
-
             $photo = 'assets/images/plats/' . $filename;
         }
 
         $platModel->update($id, $titre, $photo, $menu_id);
-
         $platModel->deleteAllergenes($id);
 
         if (!empty($_POST['allergenes']) && is_array($_POST['allergenes'])) {
@@ -192,28 +97,15 @@ class PlatController extends Controller
             }
         }
 
-        $_SESSION['success'] = "Plat mis à jour avec succès";
-
-        header("Location: ?page=plat");
-        exit;
+        $this->json(['message' => 'Plat mis à jour']);
     }
 
     public function delete()
     {
+        $this->requireRole([1, 2]);
         $id = (int)($_GET['id'] ?? 0);
-
-        if ($id <= 0) {
-            $_SESSION['error'] = "ID invalide";
-            header("Location: ?page=plat");
-            exit;
-        }
-
-        $platModel = new Plat();
-        $platModel->delete($id);
-
-        $_SESSION['success'] = "Plat supprimé avec succès";
-
-        header("Location: ?page=plat");
-        exit;
+        if (!$id) $this->error('ID manquant', 400);
+        (new Plat())->delete($id);
+        $this->json(['message' => 'Plat supprimé']);
     }
 }

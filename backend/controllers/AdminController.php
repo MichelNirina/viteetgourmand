@@ -1,114 +1,72 @@
 <?php
 
-require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../core/ApiController.php';
 require_once __DIR__ . '/../core/Session.php';
+require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Commande.php';
 
-class AdminController extends Controller
+class AdminController extends ApiController
 {
     public function index()
     {
-        Session::start();
         $this->requireRole([1]);
-
-        ob_start();
-        require_once __DIR__ . '/../views/admin/index.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $model  = new Commande();
+        $this->json([
+            'total_commandes' => $model->countCommandes(),
+            'ca_by_menu'      => $model->getCAByMenu(),
+            'stats_by_menu'   => $model->getStatsByMenu(),
+        ]);
     }
 
     public function employees()
     {
-        Session::start();
         $this->requireRole([1]);
-
-        $userModel = new User();
-        $employees = $userModel->getEmployees();
-
-        ob_start();
-        require_once __DIR__ . '/../views/admin/employees.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
-    }
-
-    public function createEmployee()
-    {
-        Session::start();
-        $this->requireRole([1]);
-
-        ob_start();
-        require_once __DIR__ . '/../views/admin/create_employee.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $this->json((new User())->getEmployees());
     }
 
     public function storeEmployee()
     {
-        Session::start();
         $this->requireRole([1]);
 
-        $email = $_POST['email'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $prenom = $_POST['prenom'];
-        $telephone = $_POST['telephone'];
-        $ville = $_POST['ville'];
-        $pays = $_POST['pays'];
-        $adresse = $_POST['adresse_postale'];
-        $role_id = 2;
+        $email     = trim($_POST['email']            ?? '');
+        $password  = trim($_POST['password']         ?? '');
+        $prenom    = trim($_POST['prenom']            ?? '');
+        $telephone = trim($_POST['telephone']         ?? '');
+        $ville     = trim($_POST['ville']             ?? '');
+        $pays      = trim($_POST['pays']              ?? '');
+        $adresse   = trim($_POST['adresse_postale']   ?? '');
 
-        $userModel = new User();
+        if (!$email || !$password || !$prenom) {
+            $this->error('Champs obligatoires manquants', 400);
+        }
 
-        $userModel->createUser(
+        (new User())->createUser(
             $email,
-            $password,
-            $prenom,
-            $telephone,
-            $ville,
-            $pays,
-            $adresse,
-            $role_id
+            password_hash($password, PASSWORD_DEFAULT),
+            $prenom, $telephone, $ville, $pays, $adresse,
+            2
         );
 
-        $_SESSION['success'] = "Employé créé avec succès";
-
-        header("Location: ?page=admin&action=employees");
-        exit;
+        $this->json(['message' => 'Employé créé'], 201);
     }
 
     public function deleteEmployee()
     {
-        Session::start();
         $this->requireRole([1]);
-
-        $id = $_GET['id'];
-
-        $userModel = new User();
-        $userModel->deleteUser($id);
-
-        $_SESSION['success'] = "Employé supprimé avec succès";
-
-        header("Location: ?page=admin&action=employees");
-        exit;
+        $id = (int)($_GET['id'] ?? 0);
+        if (!$id) $this->error('ID manquant', 400);
+        (new User())->deleteUser($id);
+        $this->json(['message' => 'Employé supprimé']);
     }
 
     public function stats()
     {
-        Session::start();
         $this->requireRole([1]);
-
-        $commandeModel = new Commande();
-
-        $total = $commandeModel->countCommandes();
-        $byMenu = $commandeModel->getStatsByMenu();
-        $ca = $commandeModel->getCAByMenu();
-
-        ob_start();
-        require_once __DIR__ . '/../views/admin/stats.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $model = new Commande();
+        $this->json([
+            'total'    => $model->countCommandes(),
+            'by_menu'  => $model->getStatsByMenu(),
+            'ca'       => $model->getCAByMenu(),
+        ]);
     }
 }

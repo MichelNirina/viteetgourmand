@@ -1,20 +1,15 @@
 <?php
 
-require_once __DIR__ . '/../models/Menu.php';
+require_once __DIR__ . '/../core/ApiController.php';
+require_once __DIR__ . '/../core/Session.php';
+require_once __DIR__ . '/../models/Commande.php';
 
-class ClientController extends Controller
+class ClientController extends ApiController
 {
     public function index()
     {
         $this->requireRole(3);
-
-        $model = new Menu();
-        $menus = $model->getAllMenus();
-
-        ob_start();
-        require_once __DIR__ . '/../views/client/dashboard.php';
-        $content = ob_get_clean();
-
-        require_once __DIR__ . '/../views/layout.php';
+        $commandes = (new Commande())->getCommandesByUser(Session::userId());
+        $this->json($commandes);
     }
 }
