@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/plat.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/plat.css">
 
 <h1>Ajouter un plat</h1>
 

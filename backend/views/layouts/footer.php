@@ -24,7 +24,7 @@
 
 </footer>
 
-<script src="assets/js/commande.js"></script>
+<script src="/viteetgourmand/frontend/assets/js/commande.js"></script>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/home.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/home.css">
 
 <div class="home-container">
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Vite & Gourmand</title>
 
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/style.css">
 </head>
 
 <body>

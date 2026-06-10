@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/alert.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/alert.css">
 
 <h1>Gestion des menus</h1>
 

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/plat.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/plat.css">
 
 <div class="plat-show">
 

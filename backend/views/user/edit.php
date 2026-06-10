@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/style.css">
 
 <h1 class="title">Mon profil</h1>
 

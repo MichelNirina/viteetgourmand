@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/admin.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/admin.css">
 
 <h1 class="title">Dashboard Administrateur</h1>
 

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/admin_menu.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/admin_menu.css">
 
 <h1>Créer un menu</h1>
 

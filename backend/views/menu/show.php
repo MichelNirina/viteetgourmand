@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/menu-show.css">
+<link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/menu-show.css">
 
 <div class="menu-container">
 

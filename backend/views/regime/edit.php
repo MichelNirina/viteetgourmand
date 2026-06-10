@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Modifier un régime</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/viteetgourmand/frontend/assets/css/style.css">
 </head>
 <body>
 
