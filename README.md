@@ -22,7 +22,7 @@ Placer le projet dans le dossier `htdocs` de XAMPP :
 
 ```bash
 cd C:/xampp/htdocs
-git clone https://github.com/<votre-compte>/viteetgourmand.git
+git clone https://github.com/MichelNirina/viteetgourmand.git
 ```
 
 Le projet doit se trouver à l'emplacement : `C:/xampp/htdocs/viteetgourmand`
