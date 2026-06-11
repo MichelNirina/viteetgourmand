@@ -1,0 +1,171 @@
+@startuml Vite et Gourmand - Diagramme de classes
+
+skinparam classAttributeIconSize 0
+skinparam classBorderColor       #e85a2a
+skinparam classBackgroundColor   #fff8f5
+skinparam classHeaderBackgroundColor #ff6b35
+skinparam classFontColor         #222
+skinparam classHeaderFontColor   #ffffff
+skinparam arrowColor             #444
+skinparam ArrowFontSize          11
+skinparam nodesep 55
+skinparam ranksep 65
+
+' ══════════════════════════════════════
+' UTILISATEURS
+' ══════════════════════════════════════
+
+class Utilisateur {
+    + user_id : int
+    + prenom : string
+    + email : string
+    + password : string
+    + telephone : string
+    + adresse_postale : string
+    + ville : string
+    + pays : string
+    --
+    + getById(id : int) : array
+    + getAll() : array
+    + getByEmail(email : string) : array
+    + create(data : array) : int
+    + update(id : int, data : array) : void
+    + delete(id : int) : void
+}
+
+class Role {
+    + role_id : int
+    + libelle : string
+    --
+    + getAll() : array
+}
+
+' ══════════════════════════════════════
+' CATALOGUE
+' ══════════════════════════════════════
+
+class Menu {
+    + menu_id : int
+    + titre : string
+    + description : string
+    + nombre_personne : int
+    + prix_par_personne : float
+    + quantite_restante : int
+    --
+    + getAll() : array
+    + getById(id : int) : array
+    + filterMenus(filtres : array) : array
+    + create(data : array) : int
+    + update(id : int, data : array) : void
+    + delete(id : int) : void
+}
+
+class Plat {
+    + plat_id : int
+    + titre_plat : string
+    + photo : string
+    --
+    + getAll() : array
+    + getById(id : int) : array
+    + getByMenuId(menu_id : int) : array
+    + create(data : array) : int
+    + update(id : int, data : array) : void
+    + delete(id : int) : void
+}
+
+class Allergene {
+    + allergene_id : int
+    + libelle : string
+    --
+    + getAll() : array
+    + create(libelle : string) : void
+    + delete(id : int) : void
+}
+
+class Regime {
+    + regime_id : int
+    + libelle : string
+    --
+    + getAll() : array
+}
+
+class Theme {
+    + theme_id : int
+    + libelle : string
+    --
+    + getAll() : array
+}
+
+' ══════════════════════════════════════
+' COMMANDES & AVIS
+' ══════════════════════════════════════
+
+class Commande {
+    + numero_commande : string
+    + date_commande : date
+    + date_prestation : date
+    + heure_livraison : string
+    + prix_menu : float
+    + prix_livraison : float
+    + nombre_personne : int
+    + statut : string
+    + pret_materiel : bool
+    + restitution_materiel : bool
+    --
+    + getAll() : array
+    + getById(id : string) : array
+    + getByUserId(id : int) : array
+    + create(data : array) : string
+    + update(data : array) : void
+    + updateStatut(id : string, statut : string) : void
+    + delete(id : string) : void
+}
+
+class Avis {
+    + avis_id : int
+    + note : int
+    + description : string
+    + statut : string
+    --
+    + getAll() : array
+    + getValidated() : array
+    + create(data : array) : void
+    + valider(id : int) : void
+    + refuser(id : int) : void
+    + delete(id : int) : void
+}
+
+' ══════════════════════════════════════
+' HORAIRES
+' ══════════════════════════════════════
+
+class Horaire {
+    + horaire_id : int
+    + jour : string
+    + heure_ouverture : string
+    + heure_fermeture : string
+    --
+    + getAll() : array
+    + getGroupedByDay() : array
+    + create(data : array) : void
+    + update(id : int, data : array) : void
+    + delete(id : int) : void
+}
+
+' ══════════════════════════════════════
+' RELATIONS
+' ══════════════════════════════════════
+
+Utilisateur "0..*" --> "1"    Role       : appartient à >
+Utilisateur "1"    --> "0..*" Commande   : passe >
+Utilisateur "1"    --> "0..*" Avis       : rédige >
+
+Commande   "0..*"  --> "1"    Menu       : porte sur >
+
+Menu       "1"     --> "0..*" Plat       : inclut >
+Menu       "0..*"  --> "1"    Regime     : respecte >
+Menu       "0..*"  --> "1"    Theme      : associé à >
+
+Plat       "0..*"  o--  "0..*" Allergene : contient
+
+@enduml

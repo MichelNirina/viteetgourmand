@@ -36,7 +36,10 @@ class Database
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
 
         } catch (PDOException $e) {
-            echo "Erreur de connexion : " . $e->getMessage();
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['error' => 'Erreur de connexion à la base de données']);
+            exit;
         }
         return $this->conn;
     }

@@ -5,14 +5,13 @@ RUN a2enmod rewrite
 
 WORKDIR /var/www/html
 
-COPY . .
+COPY --chown=www-data:www-data . .
 
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
+RUN chmod -R 755 /var/www/html \
     && mkdir -p frontend/assets/images/plats \
     && chmod -R 775 frontend/assets/images/plats
 
-RUN printf '<Directory /var/www/html>\n    AllowOverride All\n    Require all granted\n</Directory>\n' \
+RUN printf '<Directory /var/www/html>\n    AllowOverride All\n    Require all granted\n    Options -Indexes\n</Directory>\n' \
     > /etc/apache2/conf-available/app.conf \
     && a2enconf app
 
