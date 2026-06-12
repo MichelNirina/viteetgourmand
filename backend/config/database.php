@@ -13,7 +13,7 @@ class Database
     {
         $this->host     = getenv('DB_HOST')     ?: 'localhost';
         $this->port     = getenv('DB_PORT')     ?: '3306';
-        $this->db_name  = getenv('DB_NAME')     ?: 'viteetgourmand2';
+        $this->db_name  = getenv('DB_NAME')     ?: 'viteetgourmand';
         $this->username = getenv('DB_USER')     ?: 'root';
         $this->password = getenv('DB_PASSWORD') ?: '';
     }
