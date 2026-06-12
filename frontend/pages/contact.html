@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Vite & Gourmand</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+    <main>
+        <h1 class="contact-title">Nous contacter</h1>
+        <div id="error"   class="error-message"   style="display:none"></div>
+        <div id="success" class="success-message contact-success" style="display:none"></div>
+        <form id="form-contact" class="contact-form">
+            <label>Sujet *</label>
+            <input type="text" name="titre" placeholder="Sujet de votre message" required>
+            <label>Email *</label>
+            <input type="email" name="email" placeholder="Votre email" required>
+            <label>Message *</label>
+            <textarea name="description" rows="6" placeholder="Votre message..." required></textarea>
+            <button type="submit">Envoyer le message</button>
+        </form>
+    </main>
+    <script src="../js/pages/contact.js" type="module"></script>
+</body>
+</html>
