@@ -184,18 +184,13 @@ INSERT INTO allergene (libelle) VALUES
 
 -- Horaires d'ouverture
 INSERT INTO horaire (jour, heure_ouverture, heure_fermeture) VALUES
-('Lundi',    '11:30', '14:00'),
-('Lundi',    '18:30', '22:00'),
-('Mardi',    NULL,    NULL),
-('Mercredi', '11:30', '14:00'),
-('Mercredi', '18:30', '22:00'),
-('Jeudi',    '11:30', '14:00'),
-('Jeudi',    '18:30', '22:00'),
-('Vendredi', '11:30', '14:00'),
-('Vendredi', '18:30', '22:30'),
-('Samedi',   '11:30', '15:00'),
-('Samedi',   '18:30', '23:00'),
-('Dimanche', '11:30', '15:00');
+('Lundi',    '10:30', '22:30'),
+('Mardi',    '10:30', '22:30'),
+('Mercredi', '10:30', '22:30'),
+('Jeudi',    '10:30', '22:30'),
+('Vendredi', '10:30', '22:30'),
+('Samedi',   '10:30', '22:30'),
+('Dimanche', '10:30', '22:30');
 
 -- =============================================================
 -- Comptes utilisateurs par défaut
