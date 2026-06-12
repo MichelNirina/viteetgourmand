@@ -11,23 +11,6 @@ CREATE DATABASE IF NOT EXISTS viteetgourmand
 USE viteetgourmand;
 
 -- -------------------------------------------------------------
--- Suppression des tables existantes (ordre inverse des FK)
--- -------------------------------------------------------------
-SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS commande;
-DROP TABLE IF EXISTS avis;
-DROP TABLE IF EXISTS contient;
-DROP TABLE IF EXISTS plat;
-DROP TABLE IF EXISTS menu;
-DROP TABLE IF EXISTS utilisateur;
-DROP TABLE IF EXISTS horaire;
-DROP TABLE IF EXISTS allergene;
-DROP TABLE IF EXISTS theme;
-DROP TABLE IF EXISTS regime;
-DROP TABLE IF EXISTS role;
-SET FOREIGN_KEY_CHECKS = 1;
-
--- -------------------------------------------------------------
 -- Table : role
 -- -------------------------------------------------------------
 CREATE TABLE role (
