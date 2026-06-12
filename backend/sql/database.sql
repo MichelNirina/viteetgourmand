@@ -220,30 +220,30 @@ INSERT INTO menu (titre, nombre_personne, prix_par_personne, description, quanti
 
 -- Plats du Menu Noël Prestige (menu_id = 1)
 INSERT INTO plat (titre_plat, photo, menu_id) VALUES
-('Foie gras mi-cuit et brioche dorée',             NULL, 1),
-('Pintade rôtie aux marrons et légumes de saison', NULL, 1),
-('Bûche de Noël chocolat praliné',                 NULL, 1);
+('Foie gras mi-cuit et brioche dorée',             'assets/images/plats/foie_gras_mi_cuit_et_brioche_dor_e.png',    1),
+('Pintade rôtie aux marrons et légumes de saison', 'assets/images/plats/pintade_r_tie_aux_marrons_et_l_gumes.png',  1),
+('Bûche de Noël chocolat praliné',                 'assets/images/plats/b_che_de_no_l_chocolat_pralin_.png',        1);
 
 -- Plats du Menu Mariage Classique (menu_id = 2)
 INSERT INTO plat (titre_plat, photo, menu_id) VALUES
-('Velouté de champignons et crème de truffe',          NULL, 2),
-('Filet de bœuf sauce Périgueux et gratin dauphinois', NULL, 2),
-('Pièce montée et mignardises',                        NULL, 2);
+('Velouté de courge et crème fraîche',             'assets/images/plats/velout_de_courge_et_cr_me_fra_che.png',     2),
+('Filet de bœuf sauce Périgueux et gratin dauphinois', 'assets/images/plats/filet_de_b_uf_sauce_p_rigueux.png',    2),
+('Pièce montée choux et caramel',                  'assets/images/plats/pi_ce_mont_e_choux_et_caramel.png',         2);
 
 -- Plats du Menu Anniversaire Festif (menu_id = 3)
 INSERT INTO plat (titre_plat, photo, menu_id) VALUES
-('Plateau de charcuteries et fromages',                   NULL, 3),
-('Poulet rôti aux herbes et pommes de terre sarladaises',  NULL, 3),
-('Gâteau d\'anniversaire et desserts variés',              NULL, 3);
+('Saumon fumé, blinis et crème citronnée',         'assets/images/plats/saumon_fum_blinis_et_cr_me_citronn_e.png', 3),
+('Tartare de saumon, avocat et citron vert',        'assets/images/plats/tartare_de_saumon_avocat_et_citron_vert.png', 3),
+('Tarte tatin aux pommes',                          'assets/images/plats/tarte_tatin_aux_pommes.png',                3);
 
 -- Plats du Menu Végétarien Printemps (menu_id = 4)
 INSERT INTO plat (titre_plat, photo, menu_id) VALUES
-('Gaspacho de tomates et basilic',        NULL, 4),
-('Curry de pois chiches au lait de coco', NULL, 4),
-('Tarte aux fruits frais de saison',      NULL, 4);
+('Gaspacho de tomates et basilic',                 'assets/images/plats/gaspacho_de_tomates_et_basilic.png',        4),
+('Curry de pois chiches au lait de coco',          'assets/images/plats/curry_de_pois_chiches_lait_de_coco.png',    4),
+('Tarte aux fruits rouges, pâte amandes',          'assets/images/plats/tarte_aux_fruits_rouges_p_te_amandes.png',  4);
 
 -- Plats du Menu Entreprise Premium (menu_id = 5)
 INSERT INTO plat (titre_plat, photo, menu_id) VALUES
-('Verrines de saumon fumé et avocat',    NULL, 5),
-('Suprême de volaille et légumes rôtis', NULL, 5),
-('Assortiment de desserts individuels',  NULL, 5);
+('Risotto aux champignons et parmesan',            'assets/images/plats/risotto_aux_champignons_et_parmesan.png',   5),
+('Suprême de volaille sauce morilles',             'assets/images/plats/supr_me_de_volaille_sauce_morilles.png',    5),
+('Fondant chocolat cœur coulant',                  'assets/images/plats/fondant_chocolat_c_ur_coulant.png',         5);
