@@ -242,3 +242,48 @@ INSERT INTO plat (titre_plat, photo, menu_id) VALUES
 ('Risotto aux champignons et parmesan',            'assets/images/plats/risotto_aux_champignons_et_parmesan.png',   5),
 ('Suprême de volaille sauce morilles',             'assets/images/plats/supr_me_de_volaille_sauce_morilles.png',    5),
 ('Fondant chocolat cœur coulant',                  'assets/images/plats/fondant_chocolat_c_ur_coulant.png',         5);
+
+-- =============================================================
+-- Allergènes par plat
+-- Référence allergene_id : 1=Gluten 2=Crustacés 3=Œufs 4=Poissons
+--   5=Arachides 6=Soja 7=Lait 8=Fruits à coque 9=Céleri
+--   10=Moutarde 11=Sésame 12=Sulfites 13=Lupin 14=Mollusques
+-- Référence plat_id (dans l'ordre d'insertion) :
+--   1=Foie gras brioche  2=Pintade marrons  3=Bûche Noël
+--   4=Velouté courge     5=Filet bœuf       6=Pièce montée
+--   7=Saumon blinis      8=Tartare saumon   9=Tarte tatin
+--  10=Gaspacho          11=Curry pois       12=Tarte fruits rouges
+--  13=Risotto           14=Suprême volaille 15=Fondant choco
+-- =============================================================
+
+INSERT INTO contient (plat_id, allergene_id) VALUES
+-- Foie gras mi-cuit et brioche dorée : gluten, œufs, lait
+(1, 1), (1, 3), (1, 7),
+-- Pintade rôtie aux marrons : fruits à coque
+(2, 8),
+-- Bûche de Noël chocolat praliné : gluten, œufs, lait, fruits à coque
+(3, 1), (3, 3), (3, 7), (3, 8),
+-- Velouté de courge et crème fraîche : lait, céleri
+(4, 7), (4, 9),
+-- Filet de bœuf sauce Périgueux et gratin dauphinois : gluten, lait
+(5, 1), (5, 7),
+-- Pièce montée choux et caramel : gluten, œufs, lait
+(6, 1), (6, 3), (6, 7),
+-- Saumon fumé, blinis et crème citronnée : gluten, œufs, poissons, lait
+(7, 1), (7, 3), (7, 4), (7, 7),
+-- Tartare de saumon, avocat et citron vert : poissons
+(8, 4),
+-- Tarte tatin aux pommes : gluten, œufs, lait
+(9, 1), (9, 3), (9, 7),
+-- Gaspacho de tomates et basilic : céleri
+(10, 9),
+-- Curry de pois chiches au lait de coco : soja
+(11, 6),
+-- Tarte aux fruits rouges, pâte amandes : gluten, œufs, lait, fruits à coque
+(12, 1), (12, 3), (12, 7), (12, 8),
+-- Risotto aux champignons et parmesan : lait
+(13, 7),
+-- Suprême de volaille sauce morilles : gluten, lait
+(14, 1), (14, 7),
+-- Fondant chocolat cœur coulant : gluten, œufs, lait
+(15, 1), (15, 3), (15, 7);
